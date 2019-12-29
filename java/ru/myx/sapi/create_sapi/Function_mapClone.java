@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.RandomAccess;
 
-import com.sun.istack.internal.NotNull;
 
 import ru.myx.ae3.base.Base;
 import ru.myx.ae3.base.BaseArray;
@@ -143,9 +142,8 @@ public final class Function_mapClone extends BaseFunctionAbstract implements Exe
 	}
 	
 	@Override
-	@NotNull
 	@ReflectionHidden
-	public final BaseObject callNEX(@NotNull final ExecProcess ctx, @NotNull final BaseObject instance, final BaseArray arguments) {
+	public final BaseObject callNEX(final ExecProcess ctx, final BaseObject instance, final BaseArray arguments) {
 		
 		final BaseObject object = arguments.baseGet(0, BaseObject.UNDEFINED);
 		if (object.baseIsPrimitive()) {

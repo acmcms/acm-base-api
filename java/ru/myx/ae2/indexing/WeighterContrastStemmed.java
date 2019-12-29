@@ -35,11 +35,11 @@ public class WeighterContrastStemmed {
 			final List<Integer> counter = stemmed.get( signature );
 			if (counter == null) {
 				final List<Integer> created = new ArrayList<>();
-				created.add( new Integer( wordIndex ) );
+				created.add( Integer.valueOf( wordIndex ) );
 				stemmed.put( signature, created );
 				words.put( word, created );
 			} else {
-				counter.add( new Integer( wordIndex ) );
+				counter.add( Integer.valueOf( wordIndex ) );
 				words.put( word, counter );
 			}
 			wordIndex++;

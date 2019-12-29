@@ -5,8 +5,7 @@ package ru.myx.sapi.create_sapi;
 
 import java.util.Collection;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+
 
 import ru.myx.ae3.base.BaseArray;
 import ru.myx.ae3.base.BaseArrayDynamic;
@@ -20,7 +19,7 @@ import ru.myx.ae3.exec.ExecProcess;
 public final class Function_list extends BaseFunctionAbstract implements ExecCallableBoth.NativeEX {
 	
 	@Override
-	public final BaseArrayDynamic<Object> callNEX(@NotNull final ExecProcess context, @Nullable final BaseObject instance, @NotNull final BaseArray arguments) {
+	public final BaseArrayDynamic<Object> callNEX(final ExecProcess context, final BaseObject instance, final BaseArray arguments) {
 		
 		final int argcount = arguments.length();
 		if (argcount == 0) {

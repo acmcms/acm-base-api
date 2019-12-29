@@ -50,29 +50,29 @@ public abstract class AbstractType extends AbstractBasic<AbstractType> implement
 	private static final Map<String, Integer> makeStateMap() {
 		
 		final Map<String, Integer> result = new HashMap<>();
-		result.put("draft", new Integer(ModuleInterface.STATE_DRAFT));
-		result.put("черновик", new Integer(ModuleInterface.STATE_DRAFT));
-		result.put("ready", new Integer(ModuleInterface.STATE_READY));
-		result.put("готов", new Integer(ModuleInterface.STATE_READY));
-		result.put("готовый", new Integer(ModuleInterface.STATE_READY));
-		result.put("system", new Integer(ModuleInterface.STATE_SYSTEM));
-		result.put("системный", new Integer(ModuleInterface.STATE_SYSTEM));
-		result.put("active", new Integer(ModuleInterface.STATE_PUBLISH));
-		result.put("actual", new Integer(ModuleInterface.STATE_PUBLISH));
-		result.put("publish", new Integer(ModuleInterface.STATE_PUBLISH));
-		result.put("published", new Integer(ModuleInterface.STATE_PUBLISH));
-		result.put("активный", new Integer(ModuleInterface.STATE_PUBLISH));
-		result.put("актуальный", new Integer(ModuleInterface.STATE_PUBLISH));
-		result.put("опубликован", new Integer(ModuleInterface.STATE_PUBLISH));
-		result.put("опубликованый", new Integer(ModuleInterface.STATE_PUBLISH));
-		result.put("опубликованный", new Integer(ModuleInterface.STATE_PUBLISH));
-		result.put("archive", new Integer(ModuleInterface.STATE_ARCHIVE));
-		result.put("archived", new Integer(ModuleInterface.STATE_ARCHIVE));
-		result.put("архив", new Integer(ModuleInterface.STATE_ARCHIVE));
-		result.put("архивный", new Integer(ModuleInterface.STATE_ARCHIVE));
-		result.put("dead", new Integer(ModuleInterface.STATE_DEAD));
-		result.put("obsolete", new Integer(ModuleInterface.STATE_DEAD));
-		result.put("устаревший", new Integer(ModuleInterface.STATE_DEAD));
+		result.put("draft", Integer.valueOf(ModuleInterface.STATE_DRAFT));
+		result.put("черновик", Integer.valueOf(ModuleInterface.STATE_DRAFT));
+		result.put("ready", Integer.valueOf(ModuleInterface.STATE_READY));
+		result.put("готов", Integer.valueOf(ModuleInterface.STATE_READY));
+		result.put("готовый", Integer.valueOf(ModuleInterface.STATE_READY));
+		result.put("system", Integer.valueOf(ModuleInterface.STATE_SYSTEM));
+		result.put("системный", Integer.valueOf(ModuleInterface.STATE_SYSTEM));
+		result.put("active", Integer.valueOf(ModuleInterface.STATE_PUBLISH));
+		result.put("actual", Integer.valueOf(ModuleInterface.STATE_PUBLISH));
+		result.put("publish", Integer.valueOf(ModuleInterface.STATE_PUBLISH));
+		result.put("published", Integer.valueOf(ModuleInterface.STATE_PUBLISH));
+		result.put("активный", Integer.valueOf(ModuleInterface.STATE_PUBLISH));
+		result.put("актуальный", Integer.valueOf(ModuleInterface.STATE_PUBLISH));
+		result.put("опубликован", Integer.valueOf(ModuleInterface.STATE_PUBLISH));
+		result.put("опубликованый", Integer.valueOf(ModuleInterface.STATE_PUBLISH));
+		result.put("опубликованный", Integer.valueOf(ModuleInterface.STATE_PUBLISH));
+		result.put("archive", Integer.valueOf(ModuleInterface.STATE_ARCHIVE));
+		result.put("archived", Integer.valueOf(ModuleInterface.STATE_ARCHIVE));
+		result.put("архив", Integer.valueOf(ModuleInterface.STATE_ARCHIVE));
+		result.put("архивный", Integer.valueOf(ModuleInterface.STATE_ARCHIVE));
+		result.put("dead", Integer.valueOf(ModuleInterface.STATE_DEAD));
+		result.put("obsolete", Integer.valueOf(ModuleInterface.STATE_DEAD));
+		result.put("устаревший", Integer.valueOf(ModuleInterface.STATE_DEAD));
 		return result;
 	}
 	
@@ -443,7 +443,7 @@ public abstract class AbstractType extends AbstractBasic<AbstractType> implement
 				if (result == null) {
 					result = Create.tempSet();
 				}
-				result.add(new Integer(state));
+				result.add(Integer.valueOf(state));
 			}
 		}
 		return result;
@@ -505,7 +505,7 @@ public abstract class AbstractType extends AbstractBasic<AbstractType> implement
 		if (stateList == null) {
 			return true;
 		}
-		final Integer stateIndex = new Integer(Convert.MapEntry.toInt(AbstractType.MAP_STATES, state, ModuleInterface.STATE_DRAFT));
+		final Integer stateIndex = Integer.valueOf(Convert.MapEntry.toInt(AbstractType.MAP_STATES, state, ModuleInterface.STATE_DRAFT));
 		return stateList.contains(stateIndex);
 	}
 	

@@ -5,8 +5,7 @@ package ru.myx.sapi.create_sapi;
 
 import java.util.LinkedList;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+
 
 import ru.myx.ae3.base.BaseFunctionAbstract;
 import ru.myx.ae3.base.BaseLinkedList;
@@ -19,7 +18,7 @@ import ru.myx.ae3.exec.ExecCallableBoth;
 public final class Function_fifo extends BaseFunctionAbstract implements ExecCallableBoth.NativeJ1 {
 
 	@Override
-	public BaseList<Object> callNJ1(@Nullable final BaseObject instance, @NotNull final BaseObject argument) {
+	public BaseList<Object> callNJ1(final BaseObject instance, final BaseObject argument) {
 
 		final int limit = argument.baseToJavaInteger();
 		if (limit == 0) {

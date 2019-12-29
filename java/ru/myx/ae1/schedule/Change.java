@@ -22,7 +22,7 @@ import ru.myx.ae3.help.Text;
  *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class Change implements BaseSchedule {
-	private static final Comparator<Action<?>>	COMPARATOR_ACTIONS_ASCENDING	= new Comparator<Action<?>>() {
+	private static final Comparator<Action<?>>	COMPARATOR_ACTIONS_ASCENDING	= new Comparator<>() {
 																					@Override
 																					public int compare(
 																							final Action<?> o1,

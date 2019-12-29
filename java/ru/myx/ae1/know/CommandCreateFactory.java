@@ -24,7 +24,7 @@ final class CommandCreateFactory implements ObjectFactory<Object, ControlContain
 
 	private static final String UID_CC = "ACM_ROOT_COMMAND_CLEAR_CACHE";
 
-	private static final ControlContainer<?> CONTAINER_CC = new AbstractContainer<AbstractContainer<?>>() {
+	private static final ControlContainer<?> CONTAINER_CC = new AbstractContainer<>() {
 
 		@Override
 		public Object getCommandResult(final ControlCommand<?> command, final BaseObject arguments) {

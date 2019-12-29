@@ -1,6 +1,5 @@
 package ru.myx.sapi.default_sapi;
 
-import com.sun.istack.internal.NotNull;
 
 import ru.myx.ae3.base.BaseFunctionAbstract;
 import ru.myx.ae3.base.BaseObject;
@@ -17,7 +16,7 @@ public class Function_binarySize extends BaseFunctionAbstract implements ExecCal
 
 	@Override
 	public final long callLJ1(//
-			@NotNull final BaseObject instance, @NotNull final BaseObject x) {
+			final BaseObject instance, final BaseObject x) {
 
 		if (x == BaseObject.UNDEFINED) {
 			return 0L;
@@ -30,11 +29,11 @@ public class Function_binarySize extends BaseFunctionAbstract implements ExecCal
 
 	@Override
 	public final ExecStateCode execCallPrepare(//
-			@NotNull final ExecProcess ctx, //
-			@NotNull final BaseObject instance,
-			@NotNull final ResultHandler store,
+			final ExecProcess ctx, //
+			final BaseObject instance,
+			final ResultHandler store,
 			final boolean inline,
-			@NotNull final BaseObject x) {
+			final BaseObject x) {
 
 		if (x == BaseObject.UNDEFINED) {
 			return store.execReturn(ctx, BasePrimitiveNumber.NAN);

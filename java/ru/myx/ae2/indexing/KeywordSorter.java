@@ -19,7 +19,7 @@ public class KeywordSorter {
 	/**
 	 * 
 	 */
-	static final Comparator<Map.Entry<String, ? extends Number>>	COMPARATOR	= new Comparator<Map.Entry<String, ? extends Number>>() {
+	static final Comparator<Map.Entry<String, ? extends Number>>	COMPARATOR	= new Comparator<>() {
 																					@Override
 																					public final int compare(
 																							final Map.Entry<String, ? extends Number> o1,

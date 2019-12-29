@@ -459,7 +459,7 @@ public abstract class AbstractServer implements Server {
 				}
 				final ControlNode<?> share = Control.relativeNode(controlRoot, path);
 				if (share != null) {
-					root.bind(new FilterNode<FilterNode<?>>(share) {
+					root.bind(new FilterNode<>(share) {
 
 						@Override
 						public String getLocationControl() {

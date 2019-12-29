@@ -20,11 +20,7 @@ import ru.myx.ae3.exec.ExecProcess;
 import ru.myx.ae3.exec.ExecStateCode;
 import ru.myx.ae3.exec.ResultHandler;
 
-/**
- * @author myx
- * 
- * 
- */
+/** @author myx */
 final class DataAccessEvaluate implements BaseHost, BaseProperty {
 	
 	private static final BaseObject SYNCHRONIZE = new BaseNativeObject(null);
@@ -33,14 +29,13 @@ final class DataAccessEvaluate implements BaseHost, BaseProperty {
 	
 	private final ControlFieldset<?> fieldset;
 	
-	/**
-	 * only OWN properties
-	 */
+	/** only OWN properties */
 	private final BaseObject values;
 	
 	private final BaseObject data;
 	
 	DataAccessEvaluate(final ControlFieldset<?> fieldset, final BaseObject data) {
+
 		this.fieldset = fieldset;
 		this.values = new BaseNativeObject(null);
 		this.data = data;
@@ -112,7 +107,7 @@ final class DataAccessEvaluate implements BaseHost, BaseProperty {
 		for (final Iterator<String> iterator = this.values.baseKeysOwn(); iterator.hasNext();) {
 			result.add(iterator.next());
 		}
-		return new Iterator<String>() {
+		return new Iterator<>() {
 			
 			private final Iterator<String> e = result.iterator();
 			
@@ -148,7 +143,7 @@ final class DataAccessEvaluate implements BaseHost, BaseProperty {
 		for (final Iterator<? extends BasePrimitive<?>> iterator = this.values.baseKeysOwnPrimitive(); iterator.hasNext();) {
 			result.add(iterator.next());
 		}
-		return new Iterator<BasePrimitive<?>>() {
+		return new Iterator<>() {
 			
 			private final Iterator<BasePrimitive<?>> e = result.iterator();
 			
@@ -222,9 +217,11 @@ final class DataAccessEvaluate implements BaseHost, BaseProperty {
 			}
 			final BaseObject value = this.data.baseGet(key, BaseObject.UNDEFINED);
 			assert value != null : "NULL java value";
-			this.values.baseDefine(key, value == BaseObject.UNDEFINED
-				? DataAccessEvaluate.NULL_FIELD_VALUE
-				: value);
+			this.values.baseDefine(
+					key,
+					value == BaseObject.UNDEFINED
+						? DataAccessEvaluate.NULL_FIELD_VALUE
+						: value);
 			return value;
 		}
 	}
@@ -271,9 +268,11 @@ final class DataAccessEvaluate implements BaseHost, BaseProperty {
 			}
 			final BaseObject value = this.data.baseGet(key, BaseObject.UNDEFINED);
 			assert value != null : "NULL java value";
-			this.values.baseDefine(key, value == BaseObject.UNDEFINED
-				? DataAccessEvaluate.NULL_FIELD_VALUE
-				: value);
+			this.values.baseDefine(
+					key,
+					value == BaseObject.UNDEFINED
+						? DataAccessEvaluate.NULL_FIELD_VALUE
+						: value);
 			return value;
 		}
 	}
@@ -291,9 +290,11 @@ final class DataAccessEvaluate implements BaseHost, BaseProperty {
 	@Override
 	public ExecStateCode propertyGetCtxResult(final ExecProcess ctx, final BaseObject instance, final BasePrimitive<?> key, final ResultHandler store) {
 		
-		return store.execReturn(ctx, key instanceof BasePrimitiveString
-			? this.propertyGet(instance, (BasePrimitiveString) key)
-			: this.propertyGet(instance, key.toString()));
+		return store.execReturn(
+				ctx,
+				key instanceof BasePrimitiveString
+					? this.propertyGet(instance, (BasePrimitiveString) key)
+					: this.propertyGet(instance, key.toString()));
 	}
 	
 	@Override

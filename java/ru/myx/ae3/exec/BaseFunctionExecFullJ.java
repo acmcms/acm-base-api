@@ -3,8 +3,7 @@
  */
 package ru.myx.ae3.exec;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+
 
 import ru.myx.ae3.base.Base;
 import ru.myx.ae3.base.BaseFunctionAbstract;
@@ -17,9 +16,8 @@ import ru.myx.ae3.reflect.ReflectionHidden;
 public abstract class BaseFunctionExecFullJ<R> extends BaseFunctionAbstract implements ExecCallableFull {
 	
 	@Override
-	@Nullable
 	@ReflectionHidden
-	public ExecStateCode execCallImpl(@NotNull final ExecProcess ctx) throws Exception {
+	public ExecStateCode execCallImpl(final ExecProcess ctx) throws Exception {
 
 		// assert ctx.ri0BSB == ctx.ri0ASP : "Stack disbalance before function
 		// call";
@@ -33,7 +31,6 @@ public abstract class BaseFunctionExecFullJ<R> extends BaseFunctionAbstract impl
 	
 	@Override
 	@ReflectionHidden
-	@NotNull
 	public abstract Class<? extends R> execResultClassJava();
 
 	@Override
@@ -47,6 +44,5 @@ public abstract class BaseFunctionExecFullJ<R> extends BaseFunctionAbstract impl
 	 * @return
 	 * @throws Exception */
 	@ReflectionHidden
-	@Nullable
-	public abstract R getValue(@NotNull ExecProcess process) throws Exception;
+	public abstract R getValue(ExecProcess process) throws Exception;
 }

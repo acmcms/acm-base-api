@@ -1,27 +1,22 @@
 package ru.myx.sapi.default_sapi;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 
 import ru.myx.ae3.Engine;
+import ru.myx.ae3.base.Base;
+import ru.myx.ae3.base.BaseFunctionAbstract;
 import ru.myx.ae3.base.BaseMessage;
 import ru.myx.ae3.base.BaseObject;
+import ru.myx.ae3.base.BasePrimitiveString;
 import ru.myx.ae3.binary.TransferBuffer;
 import ru.myx.ae3.binary.TransferCopier;
 import ru.myx.ae3.common.Value;
-import ru.myx.ae3.exec.BaseFunctionExecFullJ;
-import ru.myx.ae3.exec.ExecProcess;
+import ru.myx.ae3.exec.ExecCallableBoth;
 
-/**
- * @author myx
- *
- */
-public class Function_binaryDigest extends BaseFunctionExecFullJ<String> {
+/** @author myx */
+public class Function_binaryDigest extends BaseFunctionAbstract implements ExecCallableBoth.NativeJ1 {
 	
-	
-	private static final MessageDigest binaryMd5(final Object x) throws UnsupportedEncodingException {
-		
+	private static final MessageDigest binaryMd5(final Object x) {
 		
 		if (x == null) {
 			return Engine.getMessageDigestInstance();
@@ -53,7 +48,6 @@ public class Function_binaryDigest extends BaseFunctionExecFullJ<String> {
 	
 	private static final String toHex(final byte hash[]) {
 		
-		
 		final StringBuilder buf = new StringBuilder(hash.length * 2);
 		int i;
 		for (i = 0; i < hash.length; ++i) {
@@ -66,29 +60,16 @@ public class Function_binaryDigest extends BaseFunctionExecFullJ<String> {
 	}
 	
 	@Override
-	public final int execArgumentsAcceptable() {
+	public final BasePrimitiveString callNJ1(final BaseObject instance, final BaseObject argument) {
 		
-		
-		return 1;
-	}
-	
-	@Override
-	public int execArgumentsDeclared() {
-		
-		
-		return 1;
-	}
-	
-	@Override
-	public final int execArgumentsMinimal() {
-		
-		
-		return 1;
+		if (argument == null || argument == BaseObject.UNDEFINED || argument == BaseObject.NULL) {
+			return null;
+		}
+		return Base.forString(Function_binaryDigest.toHex(Function_binaryDigest.binaryMd5(argument).digest()));
 	}
 	
 	@Override
 	public final boolean execIsConstant() {
-		
 		
 		return true;
 	}
@@ -96,20 +77,7 @@ public class Function_binaryDigest extends BaseFunctionExecFullJ<String> {
 	@Override
 	public Class<? extends String> execResultClassJava() {
 		
-		
 		return String.class;
-	}
-	
-	@Deprecated
-	@Override
-	public final String getValue(final ExecProcess context) throws IOException {
-		
-		
-		final BaseObject x = context.baseGetFirst(null);
-		if (x == null || x == BaseObject.UNDEFINED || x == BaseObject.NULL) {
-			return null;
-		}
-		return Function_binaryDigest.toHex(Function_binaryDigest.binaryMd5(x).digest());
 	}
 	
 }

@@ -3,8 +3,7 @@
  */
 package ru.myx.sapi.create_sapi;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
+
 
 import ru.myx.ae3.base.BaseArrayDynamic;
 import ru.myx.ae3.base.BaseFunctionAbstract;
@@ -16,7 +15,7 @@ import ru.myx.ae3.exec.ExecCallableBoth;
 public final class Function_array extends BaseFunctionAbstract implements ExecCallableBoth.NativeJ2 {
 	
 	@Override
-	public final BaseArrayDynamic<Object> callNJ2(@Nullable final BaseObject instance, @NotNull final BaseObject argumentSize, @NotNull final BaseObject argumentFill) {
+	public final BaseArrayDynamic<Object> callNJ2(final BaseObject instance, final BaseObject argumentSize, final BaseObject argumentFill) {
 		
 		final int size = argumentSize.baseToJavaInteger();
 		if (size == 0) {
