@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.RandomAccess;
 
-
 import ru.myx.ae3.base.Base;
 import ru.myx.ae3.base.BaseArray;
 import ru.myx.ae3.base.BaseArrayDynamic;
@@ -17,14 +16,13 @@ import ru.myx.ae3.base.BaseMap;
 import ru.myx.ae3.base.BaseObject;
 import ru.myx.ae3.common.Value;
 import ru.myx.ae3.exec.ExecCallableBoth;
-import ru.myx.ae3.exec.ExecProcess;
 import ru.myx.ae3.help.Convert;
 import ru.myx.ae3.produce.Reproducible;
 import ru.myx.ae3.reflect.ReflectionHidden;
 import ru.myx.util.PublicCloneable;
 
 /** @author myx */
-public final class Function_mapClone extends BaseFunctionAbstract implements ExecCallableBoth.NativeEX {
+public final class Function_mapClone extends BaseFunctionAbstract implements ExecCallableBoth.NativeJ1 {
 	
 	private static final BaseObject cloneBase(final BaseObject value) {
 		
@@ -143,24 +141,23 @@ public final class Function_mapClone extends BaseFunctionAbstract implements Exe
 	
 	@Override
 	@ReflectionHidden
-	public final BaseObject callNEX(final ExecProcess ctx, final BaseObject instance, final BaseArray arguments) {
+	public final BaseObject callNJ1(final BaseObject instance, final BaseObject argument) {
 		
-		final BaseObject object = arguments.baseGet(0, BaseObject.UNDEFINED);
-		if (object.baseIsPrimitive()) {
+		if (argument.baseIsPrimitive()) {
 			return BaseObject.createObject();
 		}
-		final BaseMap result = BaseObject.createObject(object.basePrototype());
-		if (object instanceof BaseMap) {
-			Function_mapClone.copyDeepBase(object, result);
+		final BaseMap result = BaseObject.createObject(argument.basePrototype());
+		if (argument instanceof BaseMap) {
+			Function_mapClone.copyDeepBase(argument, result);
 			return result;
 		}
-		if (object instanceof Map<?, ?>) {
-			final Map<String, Object> source = Convert.Any.toAny(object);
+		if (argument instanceof Map<?, ?>) {
+			final Map<String, Object> source = Convert.Any.toAny(argument);
 			Function_mapClone.copyDeepJava(source, result);
 		}
 		{
-			final Object base = object.baseValue();
-			if (base == null || base == object) {
+			final Object base = argument.baseValue();
+			if (base == null || base == argument) {
 				return result;
 			}
 			if (base instanceof BaseMap) {
@@ -173,24 +170,6 @@ public final class Function_mapClone extends BaseFunctionAbstract implements Exe
 			}
 		}
 		return result;
-	}
-	
-	@Override
-	public final int execArgumentsAcceptable() {
-		
-		return 1;
-	}
-	
-	@Override
-	public final int execArgumentsDeclared() {
-		
-		return 1;
-	}
-	
-	@Override
-	public final int execArgumentsMinimal() {
-		
-		return 1;
 	}
 	
 	@Override

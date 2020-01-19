@@ -31,13 +31,9 @@ import ru.myx.ae3.vfs.Entry;
 import ru.myx.ae3.vfs.TreeLinkType;
 import ru.myx.ae3.xml.Xml;
 
-/**
- * @author myx
- * 
- */
+/** @author myx */
 public abstract class SkinnerVfsAbstract extends SkinnerAbstract {
-	
-	
+
 	private static final String OWNER = "SKINNER-VFS-ABSTRACT";
 
 	private static final byte[] GIF_1X1_TRANS = new byte[]{
@@ -50,15 +46,13 @@ public abstract class SkinnerVfsAbstract extends SkinnerAbstract {
 	private static final BaseObject GIF_ATTRIBUTES = Reply.wrap(SkinnerVfsAbstract.OWNER, null, SkinnerVfsAbstract.GIF_1X1_TRANS).setContentType("image/gif").setTimeToLiveWeeks(60)
 			.setLastModified(0).setFinal()//
 			.getAttributes();
-	
+
 	/**
 	 *
 	 */
 	protected Charset charset;
 
-	/**
-	 * root vfs entry
-	 */
+	/** root vfs entry */
 	protected final Entry folder;
 
 	/**
@@ -91,15 +85,14 @@ public abstract class SkinnerVfsAbstract extends SkinnerAbstract {
 	 */
 	protected Map<String, LayoutDefinition<TargetContext<?>>> layouts;
 
-	/**
-	 * @param name
+	/** @param name
 	 *            - skin id
 	 * @param defaultDefaultDocument
 	 * @param defaultDefaultContentType
 	 * @param folder
-	 *            - root vfs entry
-	 */
+	 *            - root vfs entry */
 	public SkinnerVfsAbstract(final String name, final String defaultDefaultDocument, final String defaultDefaultContentType, final Entry folder) {
+
 		super(name, BaseObject.UNDEFINED, null, null, null);
 		this.folder = folder;
 		this.charset = Engine.CHARSET_DEFAULT;
@@ -110,15 +103,12 @@ public abstract class SkinnerVfsAbstract extends SkinnerAbstract {
 		this.fieldsetFile = folder.relative("skin.fieldset.xml", TreeLinkType.PUBLIC_TREE_REFERENCE);
 	}
 
-	/**
-	 * @param identifier
+	/** @param identifier
 	 *            - without leading slash
 	 * @param query
-	 * @return
-	 */
+	 * @return */
 	protected final ReplyAnswer getEntryAsReply(final String identifier, final ServeRequest query) {
-		
-		
+
 		final Entry file = this.folder.relative(identifier, null);
 		if (file == null || !file.isExist()) {
 			return null;
@@ -145,45 +135,39 @@ public abstract class SkinnerVfsAbstract extends SkinnerAbstract {
 
 	@Override
 	public final LayoutDefinition<TargetContext<?>> getLayoutDefinition(final String name) {
-		
-		
+
 		return this.layouts.get(name);
 	}
 
 	@Override
 	public final Entry getRoot() {
-		
-		
+
 		return this.folder;
 	}
 
-	/**
-	 * @param query
-	 * @return
-	 */
+	/** @param query
+	 * @return */
 	@Override
 	protected ReplyAnswer renderQueryImpl(final ServeRequest query) {
-		
-		
+
 		final String request;
 		{
 			final String requestOriginal = query.getResourceIdentifier();
 			request = requestOriginal.length() <= 1
 				? this.defaultDocument
 				: requestOriginal.substring(1);
-			/**
-			 * we do not want to change query's resource identifier.
-			 */
+			/** we do not want to change query's resource identifier. */
 		}
-		if (request.length() == 17 && "skin.settings.xml".equals(request)) {
+		final int requestLength = request.length();
+		if (requestLength == 17 && "skin.settings.xml".equals(request)) {
 			return Reply.stringForbidden(SkinnerVfsAbstract.OWNER, query, "File is protected!");
 		}
-		if (request.length() > 5 && request.charAt(0) == 's' && request.startsWith("skin/")) {
+		if (requestLength > 5 && request.charAt(0) == 's' && request.startsWith("skin/")) {
 			return Reply.stringForbidden(SkinnerVfsAbstract.OWNER, query, "Folder is protected!");
 		}
 		final ExecProcess process = Exec.currentProcess();
 		try {
-			if (request.length() > 7 && request.charAt(0) == '$' && request.startsWith("$files/")) {
+			if (requestLength > 7 && request.charAt(0) == '$' && request.startsWith("$files/")) {
 				final ReplyAnswer reply = this.getEntryAsReply(request, query);
 				return reply == null
 					? super.renderQueryImpl(query)
@@ -200,9 +184,7 @@ public abstract class SkinnerVfsAbstract extends SkinnerAbstract {
 					}
 					final int pos = current.lastIndexOf('-');
 					if (pos == -1) {
-						/**
-						 * check parent and import mappings
-						 */
+						/** check parent and import mappings */
 						final ReplyAnswer reply = super.renderQueryImpl(query);
 						return reply == null
 							? Reply.wrap(SkinnerVfsAbstract.OWNER, query, SkinnerVfsAbstract.GIF_ATTRIBUTES, SkinnerVfsAbstract.GIF_1X1_TRANS)
@@ -216,10 +198,12 @@ public abstract class SkinnerVfsAbstract extends SkinnerAbstract {
 			}
 			if (this.service != null) {
 				final ProgramPart template = this.service.prepare(request);
+				// System.out.println(" >>> >>>>> E: " + this + ", temlate: " + template);
 				if (template == null) {
 					return super.renderQueryImpl(query);
 				}
 				final BaseObject response = template.callNE0(process, this);
+				// System.out.println(" >>> >>>>> F: " + this + ", response: " + response);
 				if (response == null || response == BaseObject.UNDEFINED) {
 					return super.renderQueryImpl(query);
 				}
@@ -232,27 +216,26 @@ public abstract class SkinnerVfsAbstract extends SkinnerAbstract {
 				}
 				if (response instanceof CharSequence || response.baseIsPrimitive()) {
 					final BaseObject flags = Context.getFlags(process);
-					return Reply
-							.string(
-									SkinnerVfsAbstract.OWNER, //
-									query,
-									response.toString()) //
+					return Reply.string(
+							SkinnerVfsAbstract.OWNER, //
+							query,
+							response.toString()) //
 							.setContentType(MimeType.forName(request, "text/html")) //
 							.setEncoding(Engine.CHARSET_UTF8) //
 							.setFlags(flags);
 				}
 				{
 					final BaseObject flags = Context.getFlags(process);
-					return Reply
-							.object(
-									SkinnerVfsAbstract.OWNER, //
-									query,
-									response)//
+					return Reply.object(
+							SkinnerVfsAbstract.OWNER, //
+							query,
+							response)//
 							.setFlags(flags);
 				}
 			}
 			return super.renderQueryImpl(query);
 		} catch (final AbstractReplyException e) {
+			// System.out.println(" >>> >>>>> G: " + this + ", response: " + e);
 			final BaseObject flags = Context.getFlags(process);
 			return e.getReply()//
 					.addAttribute("via", "SkinnerVfsAbstract")//
@@ -265,11 +248,10 @@ public abstract class SkinnerVfsAbstract extends SkinnerAbstract {
 					e);
 			final BaseObject flags = Context.getFlags(process);
 			flags.baseDefine("exception", Base.forThrowable(e));
-			return Reply
-					.string(
-							SkinnerVfsAbstract.OWNER, //
-							query,
-							Format.Throwable.toText("Unexpected exception while rendering user response", e))//
+			return Reply.string(
+					SkinnerVfsAbstract.OWNER, //
+					query,
+					Format.Throwable.toText("Unexpected exception while rendering user response", e))//
 					.setCode(Reply.CD_EXCEPTION)//
 					.setEncoding(Engine.CHARSET_UTF8)//
 					.setFlags(flags);
@@ -278,8 +260,7 @@ public abstract class SkinnerVfsAbstract extends SkinnerAbstract {
 
 	@Override
 	public boolean scan() {
-		
-		
+
 		if (this.folder == null || !this.folder.isExist() || !this.folder.isContainer()) {
 			return false;
 		}
@@ -289,9 +270,7 @@ public abstract class SkinnerVfsAbstract extends SkinnerAbstract {
 				this.settings = Xml.toMap(
 						"skinnerScan(" + this.name + ")", //
 						this.settingsFile.toBinary().getBinaryContent().baseValue(),
-						null /*
-								 * Engine.CHARSET_DEFAULT
-								 */,
+						null /* Engine.CHARSET_DEFAULT */,
 						null,
 						new BaseNativeObject(),
 						null,
@@ -301,22 +280,16 @@ public abstract class SkinnerVfsAbstract extends SkinnerAbstract {
 					return false;
 				}
 				this.previousType = type;
-				/**
-				 * charset property
-				 */
+				/** charset property */
 				this.charset = Charset.forName(Base.getString(this.settings, "charset", Engine.ENCODING_DEFAULT));
-				/**
-				 * prototype property
-				 */
+				/** prototype property */
 				{
 					final String prototypeSkin = Base.getString(this.settings, "prototype", "skin-standard").trim();
 					this.prototypeSkin = prototypeSkin.length() == 0
 						? null
 						: prototypeSkin;
 				}
-				/**
-				 * imports
-				 */
+				/** imports */
 				{
 					final BaseArray importMappings;
 					{
@@ -346,18 +319,12 @@ public abstract class SkinnerVfsAbstract extends SkinnerAbstract {
 					}
 					this.importMappings = mapping;
 				}
-				/**
-				 * other properties
-				 */
+				/** other properties */
 				this.defaultDocument = Base.getString(this.settings, "default", this.defaultDefaultDocument);
 				this.defaultContentType = Base.getString(this.settings, "contentType", this.defaultDefaultContentType);
-				/**
-				 * not JS rules: 'false' '0' 'no' should mean FALSE
-				 */
+				/** not JS rules: 'false' '0' 'no' should mean FALSE */
 				this.requireSecure = Convert.MapEntry.toBoolean(this.settings, "secure", false);
-				/**
-				 * not JS rules: 'false' '0' 'no' should mean FALSE
-				 */
+				/** not JS rules: 'false' '0' 'no' should mean FALSE */
 				this.requireAuth = Convert.MapEntry.toBoolean(this.settings, "auth", false);
 
 				this.title = this.settings.baseGet("title", this.title);

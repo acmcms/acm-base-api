@@ -36,98 +36,99 @@ import ru.myx.ae3.vfs.Entry;
 
 /** @author myx */
 public abstract class SkinnerAbstract extends BaseHostObject implements Skinner {
-
+	
 	private static final String OWNER = "SKINNER-NEW-ABSTRACT";
-
+	
 	/**
 	 *
 	 */
 	protected String defaultDocument;
-
+	
 	/**
 	 *
 	 */
 	protected String defaultContentType;
-
+	
 	/**
 	 *
 	 */
 	protected String defaultDefaultDocument;
-
+	
 	/**
 	 *
 	 */
 	protected String defaultDefaultContentType;
-
+	
 	/** skin id */
 	protected final String name;
-
+	
 	/**
 	 *
 	 */
 	protected ControlFieldset<?> fieldset = ControlFieldset.createFieldset();
-
+	
 	/**
 	 *
 	 */
 	protected String prototypeSkin;
-
+	
 	/**
 	 *
 	 */
 	protected boolean requireAuth;
-
+	
 	/**
 	 *
 	 */
 	protected boolean requireSecure;
-
+	
 	/**
 	 *
 	 */
 	protected BaseMap settings = new BaseNativeObject();
-
+	
 	/**
 	 *
 	 */
 	protected boolean useFieldset = false;
-
+	
 	/**
 	 *
 	 */
 	protected Map<String, String> importMappings;
-
+	
 	/**
 	 *
 	 */
 	protected boolean ownSkin = true;
-
+	
 	/**
 	 *
 	 */
 	protected BaseObject title;
-
+	
 	/**
 	 *
 	 */
 	protected RenderCollection service;
-
+	
 	/**
 	 *
 	 */
 	protected RenderCollection templates;
-
+	
 	/**
 	 *
 	 */
 	protected RenderCollection layouts;
-
+	
 	/** @param name
 	 * @param title
 	 * @param service
 	 * @param templates
 	 * @param layouts */
 	public SkinnerAbstract(final String name, final BaseObject title, final RenderCollection service, final RenderCollection templates, final RenderCollection layouts) {
+		
 		super(Skinner.PROTOTYPE);
 		this.name = name;
 		this.title = title;
@@ -135,48 +136,48 @@ public abstract class SkinnerAbstract extends BaseHostObject implements Skinner 
 		this.templates = templates;
 		this.layouts = layouts;
 	}
-
+	
 	@Override
 	public abstract LayoutDefinition<TargetContext<?>> getLayoutDefinition(final String name);
-
+	
 	@Override
 	public final String getName() {
-
+		
 		return this.name;
 	}
-
+	
 	@Override
 	public abstract Entry getRoot();
-
+	
 	@Override
 	public Skin getSkinParent() {
-
+		
 		return this.prototypeSkin != null
 			? Context.getServer(Exec.currentProcess()).getSkinner(this.prototypeSkin)
 			: null;
 	}
-
+	
 	@Override
 	public final BaseMap getSkinSettings() {
-
+		
 		return this.settings;
 	}
-
+	
 	@Override
 	public final ControlFieldset<?> getSkinSettingsFieldset() {
-
+		
 		return this.fieldset;
 	}
-
+	
 	@Override
 	public final BaseObject getTitle() {
-
+		
 		return this.title;
 	}
-
+	
 	@Override
 	public final ReplyAnswer handleReply(final ReplyAnswer reply) {
-
+		
 		if (reply == null) {
 			return null;
 		}
@@ -249,7 +250,7 @@ public abstract class SkinnerAbstract extends BaseHostObject implements Skinner 
 			}
 		}
 	}
-
+	
 	/** Please:
 	 *
 	 * if (result == content) { return response; }
@@ -259,7 +260,7 @@ public abstract class SkinnerAbstract extends BaseHostObject implements Skinner 
 	 * @param content
 	 * @return */
 	protected abstract ReplyAnswer handleReplyMapOnce(final ReplyAnswer response, final BaseObject content);
-
+	
 	/* { */
 	/** The code<code>
 			if (this.prototypeSkin != null) {
@@ -272,10 +273,10 @@ public abstract class SkinnerAbstract extends BaseHostObject implements Skinner 
 	 * implementation */
 	// return response;
 	// }
-
+	
 	@Override
 	public final ReplyAnswer handleReplyOnce(final ReplyAnswer response) {
-
+		
 		/** response attributes */
 		final BaseObject attributes = response.getAttributes();
 		/** context object */
@@ -350,9 +351,11 @@ public abstract class SkinnerAbstract extends BaseHostObject implements Skinner 
 				content.baseDefine("subject", response.getSubject());
 				content.baseDefine("title", response.getTitle());
 				content.baseDefine("template", Base.get(attributes, "template", BaseObject.UNDEFINED));
-				content.baseDefine("body", body != null
-					? body
-					: "");
+				content.baseDefine(
+						"body",
+						body != null
+							? body
+							: "");
 			} else
 			/** object response */
 			if (response.getObjectClass() != null) {
@@ -575,7 +578,7 @@ public abstract class SkinnerAbstract extends BaseHostObject implements Skinner 
 					content.baseDefine("body", e.toString());
 				}
 			}
-
+			
 			if (this.useFieldset) {
 				this.fieldset.dataRetrieve(content, content);
 			}
@@ -606,7 +609,7 @@ public abstract class SkinnerAbstract extends BaseHostObject implements Skinner 
 		}
 		return response;
 	}
-
+	
 	/** Implement it when you need to finalize (modify) service messages that are going to be
 	 * returned 'as is' otherwise.
 	 *
@@ -616,28 +619,28 @@ public abstract class SkinnerAbstract extends BaseHostObject implements Skinner 
 	 * @return */
 	@SuppressWarnings("static-method")
 	protected ReplyAnswer handleServiceFinalReplyException(final ReplyAnswer reply) {
-
+		
 		return reply;
 	}
-
+	
 	@Override
 	public final boolean isAbstract() {
-
+		
 		final BaseMap skinSettings = this.getSkinSettings();
 		assert skinSettings != null : "NULL java value for skin settings, class=" + this.getClass().getName();
 		return Convert.MapEntry.toBoolean(skinSettings, "abstract", this.isAbstractDefault());
 	}
-
+	
 	/** @return */
 	@SuppressWarnings("static-method")
 	protected boolean isAbstractDefault() {
-
+		
 		return false;
 	}
-
+	
 	@Override
 	public final ReplyAnswer onQuery(final ServeRequest query) {
-
+		
 		final String request = query.getResourceIdentifier();
 		if (request == null) {
 			// super. is already called!
@@ -669,14 +672,15 @@ public abstract class SkinnerAbstract extends BaseHostObject implements Skinner 
 							final String skinnerName = request.substring(8, pos);
 							final Skinner skinner = Context.getServer(Exec.currentProcess()).getSkinner(skinnerName);
 							if (skinner == null) {
-								return Reply
-										.string(
-												SkinnerAbstract.OWNER, //
-												query,
-												"Bad skin chooser request, not found: " + skinnerName) //
+								return Reply.string(
+										SkinnerAbstract.OWNER, //
+										query,
+										"Bad skin chooser request, not found: " + skinnerName) //
 										.setCode(Reply.CD_UNKNOWN);
 							}
 							query.shiftRequested(pos, true);
+							// System.out.println(" >>> >>>>> 0: " + this + ", skinner: " +
+							// skinner);
 							return skinner.handleReply(skinner.onQuery(query));
 						}
 						break;
@@ -731,12 +735,11 @@ public abstract class SkinnerAbstract extends BaseHostObject implements Skinner 
 							query,
 							"control");
 				}
-				return Reply
-						.redirect(
-								SkinnerAbstract.OWNER, //
-								query,
-								false,
-								server.fixUrl(url))//
+				return Reply.redirect(
+						SkinnerAbstract.OWNER, //
+						query,
+						false,
+						server.fixUrl(url))//
 						.setPrivate() //
 						.setSessionID(Context.getSessionId(process)) //
 				;
@@ -744,14 +747,15 @@ public abstract class SkinnerAbstract extends BaseHostObject implements Skinner 
 		}
 		{
 			final ReplyAnswer answer = this.renderQueryImpl(query);
+			// System.out.println(" >>> >>>>> D: " + this + ", answer:" + answer);
 			return answer;
 		}
 	}
-
+	
 	/** @param query
 	 * @return */
 	protected ReplyAnswer renderQueryImpl(final ServeRequest query) {
-
+		
 		final String request = query.getResourceIdentifier();
 		if (request == null || request.length() <= 1) {
 			// super. is already called!
@@ -764,17 +768,20 @@ public abstract class SkinnerAbstract extends BaseHostObject implements Skinner 
 				+ query.getUrlBase() + ", urlOriginal: " + query.getUrl();
 		/** do not call prototype skin for 'default' queries */
 		final Map<String, String> importMappings = this.importMappings;
+		// System.out.println(" >>> >>>>> 1: " + this + ", importMappings: " + importMappings);
 		if (this.prototypeSkin != null) {
 			final Skinner skinner = Context.getServer(Exec.currentProcess()).getSkinner(this.prototypeSkin);
+			// System.out.println(" >>> >>>>> 2: " + this + ", skinner: " + skinner);
 			if (skinner != null && skinner != this) {
 				final ReplyAnswer answer = skinner.onQuery(query);
 				if (answer != null || importMappings == null) {
+					// System.out.println(" >>> >>>>> 3: " + this + ", answer: " + answer);
 					return answer;
 				}
-
+				
 				assert request.equals(query.getResourceIdentifier()) //
 				: "Changed resource identifier (" + Format.Ecma.string(request) + " -> " + Format.Ecma.string(query.getResourceIdentifier()) + ") with no reply: skin=" + skinner;
-
+				
 			}
 		}
 		/**
@@ -799,11 +806,13 @@ public abstract class SkinnerAbstract extends BaseHostObject implements Skinner 
 								"import for '" + query.getResourcePrefix() + "' mapped to '" + key + "' but no corresponding module found");
 					}
 					final ReplyAnswer answer = skinner.onQuery(query);
+					// System.out.println(" >>> >>>>> 4: " + this + ", answer: " + answer);
 					return answer == null
-						? skinner.handleReply(Reply.stringUnknown(
-								"SKIN-ABSTRACT-IMPORT", //
-								query,
-								"Not found: " + query.getResourceIdentifier()))
+						? skinner.handleReply(
+								Reply.stringUnknown(
+										"SKIN-ABSTRACT-IMPORT", //
+										query,
+										"Not found: " + query.getResourceIdentifier()))
 						: this.ownSkin
 							? skinner.handleReply(answer)
 							: answer;
@@ -813,24 +822,24 @@ public abstract class SkinnerAbstract extends BaseHostObject implements Skinner 
 		// super. is already called!
 		return null;
 	}
-
+	
 	/** Returns false by default. Will enforce HIGH authorization for secure interface if overridden
 	 * and returns true.
 	 *
 	 * @return */
 	@Override
 	public final boolean requireAuth() {
-
+		
 		return this.requireAuth;
 	}
-
+	
 	/** Returns false by default. Will enforce check for secure interface if overridden and returns
 	 * true.
 	 *
 	 * @return */
 	@Override
 	public final boolean requireSecure() {
-
+		
 		return this.requireSecure;
 	}
 }

@@ -7,23 +7,33 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import ru.myx.ae3.base.Base;
+import ru.myx.ae3.base.BaseFunctionAbstract;
 import ru.myx.ae3.base.BaseMap;
 import ru.myx.ae3.base.BaseObject;
 import ru.myx.ae3.common.Value;
-import ru.myx.ae3.exec.BaseFunctionExecFullJ;
-import ru.myx.ae3.exec.ExecProcess;
+import ru.myx.ae3.exec.ExecCallableBoth;
 import ru.myx.ae3.help.Convert;
 
-/**
- * @author myx
- *
- */
-public final class Function_mapPutRecursive extends BaseFunctionExecFullJ<Map<String, Object>> {
-	
-	
+/** @author myx */
+public final class Function_mapPutRecursive extends BaseFunctionAbstract implements ExecCallableBoth.NativeJ2 {
+
+	@Override
+	public final BaseObject callNJ2(final BaseObject instance, final BaseObject argument, final BaseObject argument2) {
+
+		if (argument instanceof Map<?, ?>) {
+			final Map<String, Object> target = Convert.Any.toAny(argument);
+			if (argument2 instanceof Map<?, ?>) {
+				final Map<String, Object> source = Convert.Any.toAny(argument2);
+				this.copyDeep(source, target);
+			}
+			return Base.forUnknown(target);
+		}
+		return BaseObject.UNDEFINED;
+	}
+
 	private final Object clone(final Object value) {
-		
-		
+
 		if (value instanceof Map<?, ?>) {
 			final BaseMap result = BaseObject.createObject();
 			final Map<String, Object> source = Convert.Any.toAny(value);
@@ -48,8 +58,7 @@ public final class Function_mapPutRecursive extends BaseFunctionExecFullJ<Map<St
 	}
 
 	private final void copyDeep(final Map<String, Object> source, final Map<String, Object> target) {
-		
-		
+
 		for (final String key : source.keySet()) {
 			final Object value = source.get(key);
 			target.put(key, this.clone(value));
@@ -57,48 +66,8 @@ public final class Function_mapPutRecursive extends BaseFunctionExecFullJ<Map<St
 	}
 
 	@Override
-	public final int execArgumentsAcceptable() {
-		
-		
-		return 2;
-	}
-
-	@Override
-	public int execArgumentsDeclared() {
-		
-		
-		return 2;
-	}
-
-	@Override
-	public final int execArgumentsMinimal() {
-		
-		
-		return 2;
-	}
-
-	@Override
 	public Class<? extends Map<String, Object>> execResultClassJava() {
-		
-		
-		return Convert.Any.toAny(Map.class);
-	}
 
-	@Override
-	@Deprecated
-	public final Map<String, Object> getValue(final ExecProcess context) {
-		
-		
-		final Object targetObject = context.get(0);
-		if (targetObject instanceof Map<?, ?>) {
-			final Map<String, Object> target = Convert.Any.toAny(targetObject);
-			final Object sourceObject = context.get(1);
-			if (sourceObject instanceof Map<?, ?>) {
-				final Map<String, Object> source = Convert.Any.toAny(sourceObject);
-				this.copyDeep(source, target);
-			}
-			return target;
-		}
-		return null;
+		return Convert.Any.toAny(Map.class);
 	}
 }

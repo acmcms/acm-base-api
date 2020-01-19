@@ -9,69 +9,34 @@ import java.net.URL;
 import ru.myx.ae1.access.AuthLevels;
 import ru.myx.ae3.Engine;
 import ru.myx.ae3.act.Context;
+import ru.myx.ae3.base.Base;
+import ru.myx.ae3.base.BaseFunctionAbstract;
 import ru.myx.ae3.base.BaseNativeObject;
 import ru.myx.ae3.base.BaseObject;
-import ru.myx.ae3.base.BaseString;
-import ru.myx.ae3.exec.BaseFunctionExecFullJ;
+import ru.myx.ae3.exec.ExecCallableBoth;
 import ru.myx.ae3.exec.ExecProcess;
 
-/**
- * @author myx
+/** @author myx
  *
- *         REDIRECT:
- *         Create.sessionTransferUrl("http://forum.myx.ru/topics/5133245/")
- *
- *
- */
-public final class Function_sessionTransferUrl extends BaseFunctionExecFullJ<URL> {
-	
-	
+ *         REDIRECT: Create.sessionTransferUrl("http://forum.myx.ru/topics/5133245/") */
+public final class Function_sessionTransferUrl extends BaseFunctionAbstract implements ExecCallableBoth.NativeE1 {
+
 	private final static class Record {
-		
-		
+
 		final long expiration;
 
 		final String ticket;
 
+		@SuppressWarnings("unused")
 		Record(final long expiration, final String ticket) {
+
 			this.expiration = expiration;
 			this.ticket = ticket;
 		}
 	}
 
-	@Override
-	public final int execArgumentsAcceptable() {
+	private final static URL makeUrl(final ExecProcess ctx, final String argument) throws MalformedURLException {
 		
-		
-		return 1;
-	}
-
-	@Override
-	public final int execArgumentsDeclared() {
-		
-		
-		return 1;
-	}
-
-	@Override
-	public final int execArgumentsMinimal() {
-		
-		
-		return 1;
-	}
-
-	@Override
-	public Class<? extends URL> execResultClassJava() {
-		
-		
-		return URL.class;
-	}
-
-	@Override
-	public final URL getValue(final ExecProcess ctx) throws MalformedURLException {
-		
-		
-		final String argument = ctx.baseGetFirst(BaseString.EMPTY).baseToJavaString();
 		final URL url = new URL(argument);
 		if (!Context.hasSessionId(ctx) || Context.getSessionState(ctx) < AuthLevels.AL_AUTHORIZED_AUTOMATICALLY) {
 			return url;
@@ -96,8 +61,32 @@ public final class Function_sessionTransferUrl extends BaseFunctionExecFullJ<URL
 				Context.getServer(ctx).getStorage().saveTemporary(ticket, action, expiration);
 			}
 		}
-		return new URL(url, "/_sys/ticket/" + ticket + url.getPath() + (url.getQuery() == null
-			? ""
-			: "?" + url.getQuery()));
+		return new URL(//
+				url, //
+				"/_sys/ticket/" + ticket + url.getPath() //
+						+ (url.getQuery() == null
+							? ""
+							: "?" + url.getQuery())//
+		);
+
+	}
+
+	@Override
+	public final BaseObject callNE1(final ExecProcess ctx, final BaseObject instance, final BaseObject argumentObject) {
+
+		if (argumentObject == BaseObject.UNDEFINED) {
+			return BaseObject.UNDEFINED;
+		}
+		try {
+			return Base.forUnknown(Function_sessionTransferUrl.makeUrl(ctx, argumentObject.baseToJavaString()));
+		} catch (final MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public Class<? extends URL> execResultClassJava() {
+
+		return URL.class;
 	}
 }
