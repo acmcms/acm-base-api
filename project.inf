@@ -1,0 +1,9 @@
+Type: ae3.Package
+Name: acm-base-api
+Info: ACMCMS: Base API
+Requires: ae3.api ae3.sdk
+Provides:	\
+	acm-base-api \
+	source-process:compile-java \
+	source-process:ae3-package \
+
