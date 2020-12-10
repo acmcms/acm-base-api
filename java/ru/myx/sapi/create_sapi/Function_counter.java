@@ -3,8 +3,6 @@
  */
 package ru.myx.sapi.create_sapi;
 
-
-
 import ru.myx.ae3.base.BaseArray;
 import ru.myx.ae3.base.BaseFunctionAbstract;
 import ru.myx.ae3.base.BaseObject;
@@ -21,11 +19,16 @@ public final class Function_counter extends BaseFunctionAbstract implements Exec
 	static final BaseObject COUNTER_PROTOTYPE = ImplementReflect.basePrototypeForJavaClass(Counter.class, false);
 	
 	@Override
-	public final BaseReflectedObject<Counter> callNEX(final ExecProcess context, final BaseObject instance, final BaseArray arguments) {
+	public final BaseReflectedObject<Counter> callNEX(//
+			final ExecProcess context,
+			final BaseObject instance,
+			final BaseArray arguments) {
 		
-		return new BaseReflectedObject<>(arguments.length() == 0
-			? new Counter()
-			: new Counter(arguments.baseGetFirst(BasePrimitiveNumber.ZERO).baseToNumber().doubleValue()), Function_counter.COUNTER_PROTOTYPE);
+		return new BaseReflectedObject<>(
+				arguments.length() == 0
+					? new Counter()
+					: new Counter(arguments.baseGetFirst(BasePrimitiveNumber.ZERO).baseToNumber().doubleValue()),
+				Function_counter.COUNTER_PROTOTYPE);
 	}
 	
 	@Override
