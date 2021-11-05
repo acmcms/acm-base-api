@@ -33,7 +33,6 @@ import ru.myx.ae3.exec.ExecProcess;
 import ru.myx.ae3.extra.External;
 import ru.myx.ae3.flow.BinaryMessage;
 import ru.myx.ae3.flow.CharacterMessage;
-import ru.myx.ae3.help.Base64;
 import ru.myx.ae3.help.Convert;
 import ru.myx.ae3.help.Dom;
 import ru.myx.ae3.help.Format;
@@ -55,6 +54,7 @@ import ru.myx.sapi.default_sapi.Function_toDouble;
 import ru.myx.sapi.default_sapi.Function_toNumber;
 import ru.myx.sapi.default_sapi.Function_toObject;
 import ru.myx.sapi.default_sapi.Function_toPrimitive;
+import ru.myx.util.Base64;
 
 /** Title: Base Implementations: Default call scope Description: Copyright:
  *
