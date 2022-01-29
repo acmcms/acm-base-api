@@ -1,8 +1,8 @@
 package ru.myx.sapi;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
-import ru.myx.ae3.Engine;
 import ru.myx.ae3.act.Act;
 import ru.myx.ae3.act.Context;
 import ru.myx.ae3.answer.AbstractReplyException;
@@ -487,9 +487,9 @@ public final class RequestSAPI implements BaseHostDataSubstitution<BaseObject> {
 				return url;
 			}
 			result.putAppend(name, Base.forUnknown(value));
-			return url + '?' + QueryString.toQueryString(result, Engine.CHARSET_UTF8);
+			return url + '?' + QueryString.toQueryString(result, StandardCharsets.UTF_8);
 		}
-		final BaseObject parameters = QueryString.parseQueryString(url.substring(pos + 1), Engine.CHARSET_UTF8);
+		final BaseObject parameters = QueryString.parseQueryString(url.substring(pos + 1), StandardCharsets.UTF_8);
 		result.baseDefineImportOwnEnumerable(parameters);
 		if (value == null) {
 			result.baseDelete(name);
@@ -499,7 +499,7 @@ public final class RequestSAPI implements BaseHostDataSubstitution<BaseObject> {
 		if (!result.baseHasKeysOwn()) {
 			return url.substring(0, pos);
 		}
-		return url.substring(0, pos + 1) + QueryString.toQueryString(result, Engine.CHARSET_UTF8);
+		return url.substring(0, pos + 1) + QueryString.toQueryString(result, StandardCharsets.UTF_8);
 	}
 
 	/**

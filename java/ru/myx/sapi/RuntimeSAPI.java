@@ -1,5 +1,7 @@
 package ru.myx.sapi;
 
+import java.nio.charset.StandardCharsets;
+
 import ru.myx.ae1.access.AccessUser;
 import ru.myx.ae1.access.AuthLevels;
 import ru.myx.ae1.control.Control;
@@ -151,7 +153,7 @@ public final class RuntimeSAPI extends BaseHostObject {
 		
 		return RuntimeSAPI.getLanguageSelectionUrl(ctx, Convert.Any.toString(o, Context.getLanguage(ctx).getName())) + (redirection == null || redirection.length() == 0
 			? ""
-			: "?back=" + Text.encodeUriComponent(redirection, Engine.CHARSET_UTF8));
+			: "?back=" + Text.encodeUriComponent(redirection, StandardCharsets.UTF_8));
 	}
 
 	/**

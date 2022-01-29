@@ -3,10 +3,10 @@ package ru.myx.ae1.control;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Set;
 
-import ru.myx.ae3.Engine;
 import ru.myx.ae3.base.Base;
 import ru.myx.ae3.base.BaseMessage;
 import ru.myx.ae3.base.BaseObject;
@@ -155,7 +155,7 @@ final class FieldBaseBinary extends AbstractField<FieldBaseBinary, Object, BaseM
 					Transfer.createBuffer((java.io.InputStream) value));
 		}
 		if (value.getClass() == String.class) {
-			return Flow.binary("FLD-BINARY", this.id, "text/plain; charset=UTF-8", Transfer.createBuffer(value.toString().getBytes(Engine.CHARSET_UTF8)));
+			return Flow.binary("FLD-BINARY", this.id, "text/plain; charset=UTF-8", Transfer.createBuffer(value.toString().getBytes(StandardCharsets.UTF_8)));
 		}
 		if (value instanceof TransferBuffer) {
 			return Flow.binary("FLD-BINARY", this.id, Convert.MapEntry.toString(fieldsetContext, this.id + "_contenttype", "application/octet-stream"), (TransferBuffer) value);

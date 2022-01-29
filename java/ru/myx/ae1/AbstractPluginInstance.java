@@ -3,6 +3,7 @@ package ru.myx.ae1;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 import ru.myx.ae1.know.Server;
@@ -158,7 +159,7 @@ public abstract class AbstractPluginInstance implements PluginInstance {
 								Xml.toMap(
 										"pluginSettings(" + this.settingsPrivateFile.getName() + ")",
 										Transfer.createCopier(this.settingsPrivateFile),
-										Engine.CHARSET_UTF8,
+										StandardCharsets.UTF_8,
 										null,
 										settings,
 										null,
@@ -212,7 +213,7 @@ public abstract class AbstractPluginInstance implements PluginInstance {
 								Xml.toMap(
 										"pluginSettings(" + this.settingsProtectedFile.getName() + ")",
 										Transfer.createCopier(this.settingsProtectedFile),
-										Engine.CHARSET_UTF8,
+										StandardCharsets.UTF_8,
 										null,
 										settings,
 										null,

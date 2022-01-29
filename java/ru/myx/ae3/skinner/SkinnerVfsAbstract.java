@@ -1,6 +1,7 @@
 package ru.myx.ae3.skinner;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -95,7 +96,7 @@ public abstract class SkinnerVfsAbstract extends SkinnerAbstract {
 
 		super(name, BaseObject.UNDEFINED, null, null, null);
 		this.folder = folder;
-		this.charset = Engine.CHARSET_DEFAULT;
+		this.charset = Charset.defaultCharset();
 		this.defaultDocument = this.defaultDefaultDocument = defaultDefaultDocument;
 		this.defaultContentType = this.defaultDefaultContentType = defaultDefaultContentType;
 		this.layouts = SkinImpl.loadLayouts(SkinImpl.getLayoutsFolder(this.folder));
@@ -221,7 +222,7 @@ public abstract class SkinnerVfsAbstract extends SkinnerAbstract {
 							query,
 							response.toString()) //
 							.setContentType(MimeType.forName(request, "text/html")) //
-							.setEncoding(Engine.CHARSET_UTF8) //
+							.setEncoding(StandardCharsets.UTF_8) //
 							.setFlags(flags);
 				}
 				{
@@ -253,7 +254,7 @@ public abstract class SkinnerVfsAbstract extends SkinnerAbstract {
 					query,
 					Format.Throwable.toText("Unexpected exception while rendering user response", e))//
 					.setCode(Reply.CD_EXCEPTION)//
-					.setEncoding(Engine.CHARSET_UTF8)//
+					.setEncoding(StandardCharsets.UTF_8)//
 					.setFlags(flags);
 		}
 	}
@@ -333,7 +334,7 @@ public abstract class SkinnerVfsAbstract extends SkinnerAbstract {
 			if (this.settingsDate != -1L) {
 				this.settingsDate = -1L;
 				this.settings = new BaseNativeObject();
-				this.charset = Engine.CHARSET_DEFAULT;
+				this.charset = Charset.defaultCharset();
 				this.prototypeSkin = null;
 				this.importMappings = null;
 				this.defaultDocument = this.defaultDefaultDocument;

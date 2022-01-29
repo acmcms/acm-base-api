@@ -3,6 +3,7 @@
  */
 package ru.myx.ae1.schedule;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,7 +16,6 @@ import java.util.List;
 import ru.myx.ae1.storage.BaseSchedule;
 import ru.myx.ae1.storage.ModuleSchedule;
 import ru.myx.ae1.storage.StorageImpl;
-import ru.myx.ae3.Engine;
 import ru.myx.ae3.act.Act;
 import ru.myx.ae3.act.Context;
 import ru.myx.ae3.base.BaseNativeObject;
@@ -42,7 +42,7 @@ public class Scheduling implements ModuleSchedule {
 		}
 		return Xml.toMap( "blobToMap(scheduling)",
 				Transfer.wrapCopier( bytes ),
-				Engine.CHARSET_UTF8,
+				StandardCharsets.UTF_8,
 				null,
 				new BaseNativeObject(),
 				null,
@@ -126,7 +126,7 @@ public class Scheduling implements ModuleSchedule {
 							final BaseObject actorData = action.getActorData();
 							ps.setBytes( 9, Xml.toXmlString( "data", actorData == null
 									? BaseObject.UNDEFINED
-									: actorData, false ).getBytes( Engine.CHARSET_UTF8 ) );
+									: actorData, false ).getBytes( StandardCharsets.UTF_8 ) );
 							ps.executeUpdate();
 						}
 					}

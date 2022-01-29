@@ -1,11 +1,11 @@
 package ru.myx.ae3.skinner;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import ru.myx.ae1.access.AccessUser;
 import ru.myx.ae1.access.AuthLevels;
 import ru.myx.ae1.know.Server;
-import ru.myx.ae3.Engine;
 import ru.myx.ae3.act.Context;
 import ru.myx.ae3.answer.AbstractReplyException;
 import ru.myx.ae3.answer.Reply;
@@ -725,7 +725,7 @@ public abstract class SkinnerAbstract extends BaseHostObject implements Skinner 
 			}
 			if (length == 9 && request.equals("/re-login")) {
 				Context.getSessionData(process).baseDelete(key);
-				final String url = Text.encodeUri("index.htm", Engine.CHARSET_UTF8);
+				final String url = Text.encodeUri("index.htm", StandardCharsets.UTF_8);
 				server.ensureAuthorization(AuthLevels.AL_AUTHORIZED_HIGHER);
 				final String from = Base.getString(query.getParameters(), "uid", null);
 				final String name = Context.getUserId(process);

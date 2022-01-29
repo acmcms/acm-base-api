@@ -3,6 +3,7 @@
  */
 package ru.myx.ae1.schedule;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -154,7 +155,7 @@ final class SchedulerTask implements Runnable {
 					try (final PreparedStatement ps = conn.prepareStatement(query)) {
 						ps.setTimestamp(1, new Timestamp(info.schedule));
 						ps.setInt(2, info.result);
-						ps.setBytes(3, String.valueOf(info.resultData).getBytes(Engine.CHARSET_UTF8));
+						ps.setBytes(3, String.valueOf(info.resultData).getBytes(StandardCharsets.UTF_8));
 						ps.setString(4, info.scheduleid);
 						if (ps.executeUpdate() == 0) {
 							continue;
@@ -275,7 +276,7 @@ final class SchedulerTask implements Runnable {
 									ps.setInt(1, SchedulerTask.RESULT_TIMEOUT);
 									ps.setBytes(2, Xml.toXmlString("data", new BaseNativeObject("launching", launching
 										? BaseObject.TRUE
-										: BaseObject.FALSE), false).getBytes(Engine.CHARSET_UTF8));
+										: BaseObject.FALSE), false).getBytes(StandardCharsets.UTF_8));
 									ps.setString(3, scheduleid);
 									ps.executeUpdate();
 								}
@@ -408,7 +409,7 @@ final class SchedulerTask implements Runnable {
 					"INSERT INTO " + this.tnLog + "(scheduleid,objectid,systemid,ownerid,schedule,name,command,parameters,result,resultData) "
 							+ "SELECT scheduleid,objectid,systemid,ownerid,schedule,name,command,parameters," + SchedulerTask.RESULT_ENTRY_DEAD + ",? FROM " + this.tnQueue
 							+ " WHERE scheduleid=?")) {
-				ps.setBytes(1, Xml.toXmlString("data", BaseObject.UNDEFINED, false).getBytes(Engine.CHARSET_UTF8));
+				ps.setBytes(1, Xml.toXmlString("data", BaseObject.UNDEFINED, false).getBytes(StandardCharsets.UTF_8));
 				ps.setString(2, scheduleid);
 				ps.executeUpdate();
 			}
@@ -424,7 +425,7 @@ final class SchedulerTask implements Runnable {
 					"INSERT INTO " + this.tnLog + "(scheduleid,objectid,systemid,ownerid,schedule,name,command,parameters,result,resultData) "
 							+ "SELECT scheduleid,objectid,systemid,ownerid,schedule,name,command,parameters," + SchedulerTask.RESULT_ENTRY_DRAFT + ",? FROM " + this.tnQueue
 							+ " WHERE scheduleid=?")) {
-				ps.setBytes(1, Xml.toXmlString("data", BaseObject.UNDEFINED, false).getBytes(Engine.CHARSET_UTF8));
+				ps.setBytes(1, Xml.toXmlString("data", BaseObject.UNDEFINED, false).getBytes(StandardCharsets.UTF_8));
 				ps.setString(2, scheduleid);
 				ps.executeUpdate();
 			}

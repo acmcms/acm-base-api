@@ -3,6 +3,7 @@ package ru.myx.sapi;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -16,7 +17,6 @@ import java.util.zip.GZIPInputStream;
 
 import org.w3c.dom.Element;
 
-import ru.myx.ae3.Engine;
 import ru.myx.ae3.act.Context;
 import ru.myx.ae3.base.Base;
 import ru.myx.ae3.base.BaseDate;
@@ -167,7 +167,7 @@ public final class DefaultSAPI {
 		
 		final byte[] result = Base64.decode(Convert.Any.toString(o, ""), false);
 		return result != null
-			? new String(result, Engine.CHARSET_UTF8)
+			? new String(result, StandardCharsets.UTF_8)
 			: "";
 	}
 	
@@ -193,7 +193,7 @@ public final class DefaultSAPI {
 	 * @return string */
 	public static final CharSequence binaryToString(final Object binary) {
 		
-		return DefaultSAPI.binaryToString(binary, Engine.CHARSET_UTF8);
+		return DefaultSAPI.binaryToString(binary, StandardCharsets.UTF_8);
 	}
 	
 	/** @param binary
@@ -1138,14 +1138,14 @@ public final class DefaultSAPI {
 	 * @return string */
 	public static final String StringToBase64(final Object o) {
 		
-		return Base64.encode(Convert.Any.toString(o, "").getBytes(Engine.CHARSET_UTF8), false);
+		return Base64.encode(Convert.Any.toString(o, "").getBytes(StandardCharsets.UTF_8), false);
 	}
 	
 	/** @param textObject
 	 * @return copier */
 	public static final TransferCopier stringToBinary(final Object textObject) {
 		
-		return DefaultSAPI.stringToBinary(textObject, Engine.CHARSET_UTF8);
+		return DefaultSAPI.stringToBinary(textObject, StandardCharsets.UTF_8);
 	}
 	
 	/** @param textObject

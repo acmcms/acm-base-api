@@ -1,5 +1,6 @@
 package ru.myx.sapi.default_sapi;
 
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
 import ru.myx.ae3.Engine;
@@ -42,7 +43,7 @@ public class Function_binaryDigest extends BaseFunctionAbstract implements ExecC
 			return ((BaseMessage) x).toBinary().getBinaryMessageDigest();
 		}
 		final MessageDigest md = Engine.getMessageDigestInstance();
-		md.update(x.toString().getBytes(Engine.CHARSET_UTF8));
+		md.update(x.toString().getBytes(StandardCharsets.UTF_8));
 		return md;
 	}
 	
