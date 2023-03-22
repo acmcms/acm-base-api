@@ -89,7 +89,7 @@ public final class UserManagerSAPI {
 	 * @return */
 	public static final boolean deleteUserByLogin(final ExecProcess ctx, final String login) {
 
-		if (login == null || login.trim().length() == 0) {
+		if (login == null || login.isBlank()) {
 			return false;
 		}
 		final AccessUser<?>[] ids = Context.getServer(ctx).getAccessManager().search(login, null, -1, -1, SortMode.SM_LOGIN);
@@ -109,7 +109,7 @@ public final class UserManagerSAPI {
 	 * @return */
 	public static final boolean deleteUserByMail(final ExecProcess ctx, final String mail) {
 
-		if (mail == null || mail.trim().length() == 0) {
+		if (mail == null || mail.isBlank()) {
 			return false;
 		}
 		final AccessManager accessManager = Context.getServer(ctx).getAccessManager();
@@ -212,8 +212,7 @@ public final class UserManagerSAPI {
 	/** @param ctx
 	 * @param data
 	 * @return string
-	 * @throws Exception
-	 */
+	 * @throws Exception */
 	public static final String registerUser(final ExecProcess ctx, final BaseObject data) throws Exception {
 
 		final String login = Base.getString(data, "login", "").trim().toLowerCase();
@@ -232,8 +231,7 @@ public final class UserManagerSAPI {
 	 * @param password
 	 * @param data
 	 * @return string
-	 * @throws Exception
-	 */
+	 * @throws Exception */
 	public static final String registerUser(final ExecProcess ctx, final String guid, final String login, final String email, final String password, final BaseObject data)
 			throws Exception {
 
