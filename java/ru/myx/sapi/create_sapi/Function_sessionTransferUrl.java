@@ -18,25 +18,25 @@ import ru.myx.ae3.exec.ExecProcess;
 
 /** @author myx
  *
- *         REDIRECT: Create.sessionTransferUrl("http://forum.myx.ru/topics/5133245/") */
+ *         REDIRECT: Create.sessionTransferUrl("http://forum.myx.co.nz/topics/5133245/") */
 public final class Function_sessionTransferUrl extends BaseFunctionAbstract implements ExecCallableBoth.NativeE1 {
-
+	
 	private final static class Record {
-
+		
 		final long expiration;
-
+		
 		final String ticket;
-
+		
 		@SuppressWarnings("unused")
 		Record(final long expiration, final String ticket) {
-
+			
 			this.expiration = expiration;
 			this.ticket = ticket;
 		}
 	}
-
+	
 	private final static URL makeUrl(final ExecProcess ctx, final String argument) throws MalformedURLException {
-		
+
 		final URL url = new URL(argument);
 		if (!Context.hasSessionId(ctx) || Context.getSessionState(ctx) < AuthLevels.AL_AUTHORIZED_AUTOMATICALLY) {
 			return url;
@@ -68,12 +68,12 @@ public final class Function_sessionTransferUrl extends BaseFunctionAbstract impl
 							? ""
 							: "?" + url.getQuery())//
 		);
-
+		
 	}
-
+	
 	@Override
 	public final BaseObject callNE1(final ExecProcess ctx, final BaseObject instance, final BaseObject argumentObject) {
-
+		
 		if (argumentObject == BaseObject.UNDEFINED) {
 			return BaseObject.UNDEFINED;
 		}
@@ -83,10 +83,10 @@ public final class Function_sessionTransferUrl extends BaseFunctionAbstract impl
 			throw new RuntimeException(e);
 		}
 	}
-
+	
 	@Override
 	public Class<? extends URL> execResultClassJava() {
-
+		
 		return URL.class;
 	}
 }
