@@ -69,12 +69,10 @@ public interface BaseChange {
 	 */
 	static int STATE_ARCHIEVED = 5;
 
-	/** @param alias
-	 */
+	/** @param alias */
 	void aliasAdd(String alias);
 
-	/** @param alias
-	 */
+	/** @param alias */
 	void aliasRemove(String alias);
 
 	/**
@@ -94,8 +92,7 @@ public interface BaseChange {
 	 */
 	void delete();
 
-	/** @param soft
-	 */
+	/** @param soft */
 	void delete(boolean soft);
 
 	/** @return date */
@@ -179,6 +176,16 @@ public interface BaseChange {
 	 * @return */
 	boolean isMultivariant();
 
+	/** @param entry */
+	default void nestUnlink(final BaseEntry<?> entry) {
+		
+		this.nestUnlink(entry, false);
+	}
+
+	/** @param entry
+	 * @param soft */
+	void nestUnlink(BaseEntry<?> entry, final boolean soft);
+
 	/**
 	 *
 	 */
@@ -199,65 +206,50 @@ public interface BaseChange {
 	 */
 	void setCommitLogged();
 
-	/** @param created
-	 */
+	/** @param created */
 	void setCreated(long created);
 
-	/** @param folder
-	 */
+	/** @param folder */
 	void setCreateLinkedIn(BaseEntry<?> folder);
 
 	/** @param folder
-	 * @param key
-	 */
+	 * @param key */
 	void setCreateLinkedIn(BaseEntry<?> folder, String key);
 
-	/** @param entry
-	 */
+	/** @param entry */
 	void setCreateLinkedWith(BaseEntry<?> entry);
 
-	/** @param local
-	 */
+	/** @param local */
 	void setCreateLocal(boolean local);
 
-	/** @param folder
-	 */
+	/** @param folder */
 	void setFolder(boolean folder);
 
-	/** @param key
-	 */
+	/** @param key */
 	void setKey(String key);
 
-	/** @param parent
-	 */
+	/** @param parent */
 	void setParent(BaseEntry<?> parent);
 
-	/** @param parentGuid
-	 */
+	/** @param parentGuid */
 	void setParentGuid(String parentGuid);
 
-	/** @param state
-	 */
+	/** @param state */
 	void setState(int state);
 
-	/** @param title
-	 */
+	/** @param title */
 	void setTitle(String title);
 
-	/** @param typeName
-	 */
+	/** @param typeName */
 	void setTypeName(String typeName);
 
-	/** @param comment
-	 */
+	/** @param comment */
 	void setVersionComment(String comment);
 
-	/** @param data
-	 */
+	/** @param data */
 	void setVersionData(BaseObject data);
 
-	/** @param versioning
-	 */
+	/** @param versioning */
 	void setVersioning(boolean versioning);
 
 	/**
@@ -268,9 +260,11 @@ public interface BaseChange {
 	/**
 	 *
 	 */
-	void unlink();
+	default void unlink() {
+		
+		this.unlink(false);
+	}
 
-	/** @param soft
-	 */
+	/** @param soft */
 	void unlink(boolean soft);
 }
