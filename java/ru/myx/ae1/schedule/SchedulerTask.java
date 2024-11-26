@@ -34,7 +34,7 @@ import ru.myx.ae3.report.Report;
 import ru.myx.ae3.xml.Xml;
 
 /** @author myx
- * 
+ *
  *         To change the template for this generated type comment go to Window>Preferences>Java>Code
  *         Generation>Code and Comments */
 final class SchedulerTask implements Runnable {
@@ -85,52 +85,11 @@ final class SchedulerTask implements Runnable {
 	 * @param tnQueue
 	 * @param tnLog */
 	SchedulerTask(final StorageImpl parent, final boolean singleMode, final String tnQueue, final String tnLog) {
+
 		this.parent = parent;
 		this.singleMode = singleMode;
 		this.tnQueue = tnQueue;
 		this.tnLog = tnLog;
-	}
-
-	/** @param runner
-	 * @param scheduleid
-	 * @param schedule
-	 * @param result */
-	void enqueueResult(final Runnable runner, final String scheduleid, final long schedule, final BaseObject result) {
-
-		final SchedulerTaskResult info;
-		if (result == null) {
-			info = new SchedulerTaskResult(scheduleid, schedule, SchedulerTask.RESULT_DONE, Xml.toXmlString("data", new BaseNativeObject(), false), 0L);
-		} else if (result.baseIsPrimitiveInteger()) {
-			final long reschedule = result.baseToJavaLong();
-			info = new SchedulerTaskResult(scheduleid, schedule, SchedulerTask.RESULT_RESCHEDULE, Xml.toXmlString("data", new BaseNativeObject("date", result), false), reschedule);
-		} else if (result instanceof Date) {
-			final long reschedule = ((Date) result).getTime();
-			info = new SchedulerTaskResult(scheduleid, schedule, SchedulerTask.RESULT_RESCHEDULE, Xml.toXmlString("data", new BaseNativeObject("date", result), false), reschedule);
-		} else if (result instanceof Throwable) {
-			final String text = Format.Throwable.toText((Throwable) result);
-			info = new SchedulerTaskResult(scheduleid, schedule, SchedulerTask.RESULT_EXCEPTION, Xml.toXmlString("data", new BaseNativeObject("throwable", text.length() < 4000
-				? text
-				: text.substring(0, 3999)), false), 0L);
-		} else {
-			info = new SchedulerTaskResult(scheduleid, schedule, SchedulerTask.RESULT_UNKNOWN, Xml.toXmlString("data", new BaseNativeObject("result", result), false), 0L);
-		}
-		Report.event(SchedulerTask.OWNER, "LAUNCHING-ENQUEUE-RESULT", "runnable=" + runner + ", result=" + info);
-		if (this.singleMode || this.destroyed) {
-			this.finished.addLast(info);
-			try (final Connection conn = this.parent.nextConnection()) {
-				this.flushFinished(conn);
-			} catch (final Error e) {
-				throw e;
-			} catch (final RuntimeException e) {
-				throw e;
-			} catch (final Throwable e) {
-				throw new RuntimeException(e);
-			}
-		} else {
-			synchronized (this.finished) {
-				this.finished.addLast(info);
-			}
-		}
 	}
 
 	private void flushFinished(final Connection conn) throws Throwable {
@@ -208,13 +167,13 @@ final class SchedulerTask implements Runnable {
 			if (SchedulerTask.activeSchedulerCount >= SchedulerTask.ACTIVE_SCHEDULER_MAX) {
 				if (!this.destroyed) {
 					Report.warning(SchedulerTask.OWNER, "Too many active schedulers, limit=" + SchedulerTask.ACTIVE_SCHEDULER_MAX + ", will retry in 10 seconds");
-					Act.later(null, this, 10000L);
+					Act.later(null, this, 10_000L);
 				}
 				return;
 			}
 			SchedulerTask.activeSchedulerCount++;
 		}
-		long nextIterationDelay = 15000L;
+		long nextIterationDelay = 15_000L;
 		try {
 			final BaseObject settings = this.parent.getSettingsProtected();
 			try (final Connection conn = this.parent.nextConnection()) {
@@ -239,7 +198,7 @@ final class SchedulerTask implements Runnable {
 						}
 					}
 				}
-				if (this.lastCleanup + 30L * 60L * 1000L < Engine.fastTime()) {
+				if (this.lastCleanup + 30L * 60_000L < Engine.fastTime()) {
 					this.lastCleanup = Engine.fastTime();
 					List<String> timedOutIds = null;
 					List<Boolean> timedOutStates = null;
@@ -248,16 +207,17 @@ final class SchedulerTask implements Runnable {
 									+ SchedulerTask.SCHEDULE_STATE_RUNNING + ")",
 							ResultSet.TYPE_FORWARD_ONLY,
 							ResultSet.CONCUR_READ_ONLY)) {
-						ps.setTimestamp(1, new Timestamp(this.lastCleanup - 6L * 60L * 60L * 1000L));
+						ps.setTimestamp(1, new Timestamp(this.lastCleanup - 6L * 60L * 60_000L));
 						try (final ResultSet rs = ps.executeQuery()) {
 							if (rs.next()) {
 								timedOutIds = new ArrayList<>();
 								timedOutStates = new ArrayList<>();
 								do {
 									timedOutIds.add(rs.getString(1));
-									timedOutStates.add(rs.getInt(2) == SchedulerTask.SCHEDULE_STATE_LAUNCHING
-										? Boolean.TRUE
-										: Boolean.FALSE);
+									timedOutStates.add(
+											rs.getInt(2) == SchedulerTask.SCHEDULE_STATE_LAUNCHING
+												? Boolean.TRUE
+												: Boolean.FALSE);
 								} while (rs.next());
 							}
 						}
@@ -274,9 +234,16 @@ final class SchedulerTask implements Runnable {
 												+ "SELECT scheduleid,objectid,systemid,ownerid,schedule,name,command,parameters,?,? FROM " + this.tnQueue
 												+ " WHERE scheduleid=?")) {
 									ps.setInt(1, SchedulerTask.RESULT_TIMEOUT);
-									ps.setBytes(2, Xml.toXmlString("data", new BaseNativeObject("launching", launching
-										? BaseObject.TRUE
-										: BaseObject.FALSE), false).getBytes(StandardCharsets.UTF_8));
+									ps.setBytes(
+											2,
+											Xml.toXmlString(
+													"data",
+													new BaseNativeObject(
+															"launching",
+															launching
+																? BaseObject.TRUE
+																: BaseObject.FALSE),
+													false).getBytes(StandardCharsets.UTF_8));
 									ps.setString(3, scheduleid);
 									ps.executeUpdate();
 								}
@@ -313,7 +280,7 @@ final class SchedulerTask implements Runnable {
 							"SELECT scheduleid FROM " + this.tnQueue + " WHERE schedule<? AND state=" + SchedulerTask.SCHEDULE_STATE_WAITING + " ORDER BY schedule ASC",
 							ResultSet.TYPE_FORWARD_ONLY,
 							ResultSet.CONCUR_READ_ONLY)) {
-						ps.setTimestamp(1, new Timestamp(Engine.fastTime() + 30000L));
+						ps.setTimestamp(1, new Timestamp(Engine.fastTime() + 30_000L));
 						ps.setMaxRows(50);
 						try (final ResultSet rs = ps.executeQuery()) {
 							while (rs.next()) {
@@ -324,7 +291,7 @@ final class SchedulerTask implements Runnable {
 						Report.exception(SchedulerTask.OWNER, "Error while analyzing schedule queue for " + this.parent.getMnemonicName() + " storage.", t);
 					}
 					if (!pending.isEmpty()) {
-						nextIterationDelay = 3000L;
+						nextIterationDelay = 3_000L;
 						Report.event(SchedulerTask.OWNER, "PENDING", pending.toString());
 						for (final String scheduleid : pending) {
 							Report.event(SchedulerTask.OWNER, "LAUNCHING", scheduleid);
@@ -346,12 +313,11 @@ final class SchedulerTask implements Runnable {
 								final BaseObject parameters;
 								final long schedule;
 								{
-									try (final PreparedStatement ps = conn
-											.prepareStatement(
-													"SELECT objectid,ownerid,name,command,parameters,schedule FROM " + this.tnQueue
-															+ " WHERE scheduleid=? AND systemid=? AND state=" + SchedulerTask.SCHEDULE_STATE_LAUNCHING,
-													ResultSet.TYPE_FORWARD_ONLY,
-													ResultSet.CONCUR_READ_ONLY)) {
+									try (final PreparedStatement ps = conn.prepareStatement(
+											"SELECT objectid,ownerid,name,command,parameters,schedule FROM " + this.tnQueue + " WHERE scheduleid=? AND systemid=? AND state="
+													+ SchedulerTask.SCHEDULE_STATE_LAUNCHING,
+											ResultSet.TYPE_FORWARD_ONLY,
+											ResultSet.CONCUR_READ_ONLY)) {
 										ps.setString(1, scheduleid);
 										ps.setString(2, systemid);
 										try (final ResultSet rs = ps.executeQuery()) {
@@ -378,10 +344,10 @@ final class SchedulerTask implements Runnable {
 				}
 			}
 		} catch (final SQLException t) {
-			nextIterationDelay = 15000L;
+			nextIterationDelay = 15_000L;
 			Report.exception(SchedulerTask.OWNER, "Error while requesting database connection, will resume in 15 seconds", t);
 		} catch (final Throwable t) {
-			nextIterationDelay = 30000L;
+			nextIterationDelay = 30_000L;
 			Report.exception(SchedulerTask.OWNER, "Unknown error, will resume in 30 seconds", t);
 		} finally {
 			synchronized (SchedulerTask.class) {
@@ -389,6 +355,64 @@ final class SchedulerTask implements Runnable {
 			}
 			if (!this.destroyed) {
 				Act.later(null, this, nextIterationDelay);
+			}
+		}
+	}
+
+	@Override
+	public final String toString() {
+
+		return SchedulerTask.OWNER + ", parent=" + this.parent;
+	}
+
+	/** @param runner
+	 * @param scheduleid
+	 * @param schedule
+	 * @param result */
+	void enqueueResult(final Runnable runner, final String scheduleid, final long schedule, final BaseObject result) {
+
+		final SchedulerTaskResult info;
+		if (result == null) {
+			info = new SchedulerTaskResult(scheduleid, schedule, SchedulerTask.RESULT_DONE, Xml.toXmlString("data", new BaseNativeObject(), false), 0L);
+		} else if (result.baseIsPrimitiveInteger()) {
+			final long reschedule = result.baseToJavaLong();
+			info = new SchedulerTaskResult(scheduleid, schedule, SchedulerTask.RESULT_RESCHEDULE, Xml.toXmlString("data", new BaseNativeObject("date", result), false), reschedule);
+		} else if (result instanceof Date) {
+			final long reschedule = ((Date) result).getTime();
+			info = new SchedulerTaskResult(scheduleid, schedule, SchedulerTask.RESULT_RESCHEDULE, Xml.toXmlString("data", new BaseNativeObject("date", result), false), reschedule);
+		} else if (result instanceof Throwable) {
+			final String text = Format.Throwable.toText((Throwable) result);
+			info = new SchedulerTaskResult(
+					scheduleid,
+					schedule,
+					SchedulerTask.RESULT_EXCEPTION,
+					Xml.toXmlString(
+							"data",
+							new BaseNativeObject(
+									"throwable",
+									text.length() < 4000
+										? text
+										: text.substring(0, 3999)),
+							false),
+					0L);
+		} else {
+			info = new SchedulerTaskResult(scheduleid, schedule, SchedulerTask.RESULT_UNKNOWN, Xml.toXmlString("data", new BaseNativeObject("result", result), false), 0L);
+		}
+		Report.event(SchedulerTask.OWNER, "LAUNCHING-ENQUEUE-RESULT", "runnable=" + runner + ", result=" + info);
+		if (this.singleMode || this.destroyed) {
+			this.finished.addLast(info);
+			try (final Connection conn = this.parent.nextConnection()) {
+				this.flushFinished(conn);
+			} catch (final Error e) {
+				throw e;
+			} catch (final RuntimeException e) {
+				throw e;
+			} catch (final Throwable e) {
+				throw new RuntimeException(e);
+			}
+		} else {
+			synchronized (this.finished) {
+				this.finished.addLast(info);
 			}
 		}
 	}
@@ -461,7 +485,7 @@ final class SchedulerTask implements Runnable {
 		}
 		Report.event(SchedulerTask.OWNER, "LAUNCHING-ENQUEUE-ACT", "runnable=" + runner);
 		final long left = schedule - Engine.fastTime();
-		if (left > 2000L) {
+		if (left > 2_000L) {
 			Act.later(process, runner, left);
 
 		} else {
@@ -472,11 +496,5 @@ final class SchedulerTask implements Runnable {
 	void stop() {
 
 		this.destroyed = true;
-	}
-
-	@Override
-	public final String toString() {
-
-		return SchedulerTask.OWNER + ", parent=" + this.parent;
 	}
 }

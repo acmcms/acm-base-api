@@ -20,23 +20,23 @@ import ru.myx.ae3.exec.ExecProcess;
  *
  *         REDIRECT: Create.sessionTransferUrl("http://forum.myx.co.nz/topics/5133245/") */
 public final class Function_sessionTransferUrl extends BaseFunctionAbstract implements ExecCallableBoth.NativeE1 {
-	
+
 	private final static class Record {
-		
+
 		final long expiration;
-		
+
 		final String ticket;
-		
+
 		@SuppressWarnings("unused")
 		Record(final long expiration, final String ticket) {
-			
+
 			this.expiration = expiration;
 			this.ticket = ticket;
 		}
 	}
-	
-	private final static URL makeUrl(final ExecProcess ctx, final String argument) throws MalformedURLException {
 
+	private final static URL makeUrl(final ExecProcess ctx, final String argument) throws MalformedURLException {
+		
 		final URL url = new URL(argument);
 		if (!Context.hasSessionId(ctx) || Context.getSessionState(ctx) < AuthLevels.AL_AUTHORIZED_AUTOMATICALLY) {
 			return url;
@@ -57,7 +57,7 @@ public final class Function_sessionTransferUrl extends BaseFunctionAbstract impl
 						.putAppend("sid", Context.getSessionId(ctx))//
 						.putAppend("state", Math.min(Context.getSessionState(ctx), AuthLevels.AL_AUTHORIZED_NORMAL)) //
 				;
-				final long expiration = Engine.fastTime() + 1000L * 60L * 60L * 24L * 1L;
+				final long expiration = Engine.fastTime() + 60_000L * 60L * 24L * 1L;
 				Context.getServer(ctx).getStorage().saveTemporary(ticket, action, expiration);
 			}
 		}
@@ -68,12 +68,12 @@ public final class Function_sessionTransferUrl extends BaseFunctionAbstract impl
 							? ""
 							: "?" + url.getQuery())//
 		);
-		
+
 	}
-	
+
 	@Override
 	public final BaseObject callNE1(final ExecProcess ctx, final BaseObject instance, final BaseObject argumentObject) {
-		
+
 		if (argumentObject == BaseObject.UNDEFINED) {
 			return BaseObject.UNDEFINED;
 		}
@@ -83,10 +83,10 @@ public final class Function_sessionTransferUrl extends BaseFunctionAbstract impl
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	@Override
 	public Class<? extends URL> execResultClassJava() {
-		
+
 		return URL.class;
 	}
 }

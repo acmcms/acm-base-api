@@ -65,6 +65,7 @@ final class TypeCommand extends SimpleCommand {
 	private final Type<?> type;
 	
 	TypeCommand(final Server server, final Type<?> type, final String key, final String keyType, final BaseObject attributes) {
+
 		assert server != null : "Server is NULL";
 		attributes.baseDefine("id", key);
 		attributes.baseDefine("typeInstance", type);
@@ -182,7 +183,7 @@ final class TypeCommand extends SimpleCommand {
 							final CacheL2<BaseObject> cache = this.server.getObjectCache();
 							this.script = cache == null
 								? new ExecAlwaysInstance(this.result, this.arguments, renderer, parentContext)
-								: new ExecCachedInstance(cache, this.result, this.arguments, renderer, sourceURI, 1000L * 60L * 60L * 24L, parentContext);
+								: new ExecCachedInstance(cache, this.result, this.arguments, renderer, sourceURI, 60_000L * 60L * 24L, parentContext);
 						} else {
 							this.script = new ExecOnceStatic(
 									this.type, //
@@ -194,8 +195,8 @@ final class TypeCommand extends SimpleCommand {
 						break;
 					case CACHE : // cache
 					{
-						final long expiration = Convert.MapEntry.toPeriod(this.getAttributes(), "expire", 15L * 1000L * 60L);
-						if (expiration > 1000L * 60L) {
+						final long expiration = Convert.MapEntry.toPeriod(this.getAttributes(), "expire", 15L * 60_000L);
+						if (expiration > 60_000L) {
 							final CacheL2<BaseObject> cache = this.server.getObjectCache();
 							this.script = cache == null
 								? this.instance
@@ -234,14 +235,28 @@ final class TypeCommand extends SimpleCommand {
 		return this.script;
 	}
 	
+	@Override
+	public final String getIcon() {
+		
+		return this.icon;
+	}
+	
+	@Override
+	public String toString() {
+		
+		return "[object " + this.baseClass() + "(" + "key=" + this.key + ", type=" + this.keyType + ")]";
+	}
+	
 	final ProgramPart getCheck() {
 		
 		if (this.check == null) {
 			synchronized (this.checkExpression) {
 				if (this.check == null) {
-					this.check = Evaluate.prepareFunctionObjectForExpression(this.checkExpression.length() == 0
-						? "true"
-						: this.checkExpression, null);
+					this.check = Evaluate.prepareFunctionObjectForExpression(
+							this.checkExpression.length() == 0
+								? "true"
+								: this.checkExpression,
+							null);
 				}
 			}
 		}
@@ -283,12 +298,6 @@ final class TypeCommand extends SimpleCommand {
 		return this.form;
 	}
 	
-	@Override
-	public final String getIcon() {
-		
-		return this.icon;
-	}
-	
 	final boolean needStart() {
 		
 		return this.execution == FunctionExecutionType.AUTO;
@@ -310,11 +319,5 @@ final class TypeCommand extends SimpleCommand {
 			}
 			this.script = null;
 		}
-	}
-	
-	@Override
-	public String toString() {
-		
-		return "[object " + this.baseClass() + "(" + "key=" + this.key + ", type=" + this.keyType + ")]";
 	}
 }

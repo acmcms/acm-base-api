@@ -54,42 +54,42 @@ import ru.myx.ae3.serve.ServeRequest;
  *
  */
 final class TypeImpl extends AbstractType {
-	
+
 	private static final ControlFieldset<?> NULL_FIELDSET = ControlFieldset.createFieldset();
-	
+
 	/**
 	 *
 	 */
 	public static final int HT_DEFAULT = 0;
-	
+
 	/**
 	 *
 	 */
 	public static final int HT_PARENT = 1;
-	
+
 	/**
 	 *
 	 */
 	public static final int HT_ANY = 2;
-	
+
 	/**
 	 *
 	 */
 	public static final int HT_ALL = 3;
-	
+
 	/**
 	 *
 	 */
 	public static final String[] HT_NAMES = {
 			"default", "parent", "any", "all"
 	};
-	
+
 	private static final String NULL_SORT = "history";
-	
+
 	private static final Set<Integer> NULL_STATE_LIST = Create.tempSet();
-	
+
 	private static final ControlFieldset<?> getFieldsetFromMap(final BaseObject map, final String name, final ControlFieldset<?> defaultValue) {
-		
+
 		if (map == null || map.baseIsPrimitive()) {
 			return defaultValue;
 		}
@@ -136,9 +136,9 @@ final class TypeImpl extends AbstractType {
 			? ControlFieldset.materializeFieldset(String.valueOf(object))
 			: ControlFieldset.createFieldset(defaultValue, ControlFieldset.materializeFieldset(String.valueOf(object)));
 	}
-	
+
 	private static final Map<?, ?> getMapFromMap(final Map<?, ?> map, final String name, final Map<?, ?> defaultValue) {
-		
+
 		final Object object = map.get(name);
 		if (object == null) {
 			return defaultValue;
@@ -148,75 +148,75 @@ final class TypeImpl extends AbstractType {
 		}
 		return defaultValue;
 	}
-	
+
 	private final long modified;
-	
+
 	private final Collection<String> replacements;
-	
+
 	private final Map<?, ?> responseBehavior;
-	
+
 	private final ProgramPart responseScript;
-	
+
 	private final ProgramPart responseFilter;
-	
+
 	private final ControlFieldset<?> fieldsetLoad;
-	
+
 	private final Set<String> childrenTypes;
-	
+
 	private final Set<String> parentsTypes;
-	
+
 	private final BaseObject formModify;
-	
+
 	private ControlFieldset<?> fieldsetModify;
-	
+
 	private final Object scriptTriggerModify;
-	
+
 	private ProgramPart scriptTriggerModifyPrepared;
-	
+
 	private final BaseObject formCreate;
-	
+
 	private ControlFieldset<?> fieldsetCreate;
-	
+
 	private final Object scriptTriggerCreate;
-	
+
 	private ProgramPart scriptTriggerCreatePrepared;
-	
+
 	private final BaseObject formDelete;
-	
+
 	private final Object scriptTriggerDelete;
-	
+
 	private ProgramPart scriptTriggerDeletePrepared;
-	
+
 	private final TypeCommand[] commands;
-	
+
 	private final boolean privateResponse;
-	
+
 	private final boolean anonymousResponse;
-	
+
 	private final Function<String, BaseMessage> resources;
-	
+
 	private int behaviorHandleToParent = -1;
-	
+
 	private int behaviorHandleAllIncoming = -1;
-	
+
 	private int behaviorHandleAnyThrough = -1;
-	
+
 	private int behaviorAutoRecalculate = -1;
-	
+
 	private String behaviorSort = null;
-	
+
 	private long behaviorCacheServerTtl = -2L;
-	
+
 	private int behaviorCacheClientTtl = -2;
-	
+
 	private Collection<Integer> stateList;
-	
+
 	private final Server server;
-	
+
 	private final BaseObject typeInheritancePrototype;
-	
+
 	private TypeConstructor constructor;
-	
+
 	TypeImpl(
 			final Server server,
 			final Type<?> parentType,
@@ -225,16 +225,21 @@ final class TypeImpl extends AbstractType {
 			final long modified,
 			final BaseMap scheme,
 			final Function<String, BaseMessage> resources) {
-		
-		super(parentType == null
-			? parentTypeDefault
-			: parentType, server.getRootContext(), key, scheme);
+
+		super(
+				parentType == null
+					? parentTypeDefault
+					: parentType,
+				server.getRootContext(),
+				key,
+				scheme);
 		assert server != null : "Server is NULL";
-		this.typeInheritancePrototype = new BaseNativeObject(parentType == null
-			? parentTypeDefault == null
-				? null
-				: parentTypeDefault.getTypePrototypeObject()
-			: parentType.getTypePrototypeObject());
+		this.typeInheritancePrototype = new BaseNativeObject(
+				parentType == null
+					? parentTypeDefault == null
+						? null
+						: parentTypeDefault.getTypePrototypeObject()
+					: parentType.getTypePrototypeObject());
 		this.server = server;
 		this.resources = resources;
 		this.modified = this.parent == null
@@ -267,9 +272,12 @@ final class TypeImpl extends AbstractType {
 			this.responseFilter = server.createRenderer("TYPE{" + key + "}/RESPOND-FILTER", Convert.MapEntry.toObject(schemeRespond, "filter", null));
 			this.responseScript = server.createRenderer("TYPE{" + key + "}/RESPOND-SCRIPT", Convert.MapEntry.toObject(schemeRespond, "script", null));
 		}
-		this.fieldsetLoad = TypeImpl.getFieldsetFromMap(scheme, "load", this.parent == null
-			? ControlFieldset.createFieldset()
-			: this.parent.getFieldsetLoad());
+		this.fieldsetLoad = TypeImpl.getFieldsetFromMap(
+				scheme,
+				"load",
+				this.parent == null
+					? ControlFieldset.createFieldset()
+					: this.parent.getFieldsetLoad());
 		final BaseObject schemeModify = scheme.baseGet("modify", BaseObject.UNDEFINED);
 		assert schemeModify != null : "NULL java object";
 		if (Base.hasKeys(schemeModify)) {
@@ -392,9 +400,11 @@ final class TypeImpl extends AbstractType {
 						continue;
 					}
 					final String type = Base.getString(commandAttributes, "type", "").trim();
-					commandAttributes.baseDefine("permission", type.length() == 0
-						? "hidden"
-						: type);
+					commandAttributes.baseDefine(
+							"permission",
+							type.length() == 0
+								? "hidden"
+								: type);
 					if (commandKey.equals(key)) {
 						final TypeConstructor command = new TypeConstructor(server, this, commandKey, keyType, commandAttributes);
 						command.baseDefine(
@@ -445,22 +455,22 @@ final class TypeImpl extends AbstractType {
 		this.privateResponse = !Convert.MapEntry.toBoolean(this.responseBehavior, "public", true);
 		this.anonymousResponse = !Convert.MapEntry.toBoolean(this.responseBehavior, "anonymous", true);
 	}
-	
+
 	@Override
 	public BaseFunction baseCall() {
-		
+
 		return this.constructor;
 	}
-	
+
 	@Override
 	public BaseFunction baseConstruct() {
-		
+
 		return this.constructor;
 	}
-	
+
 	@Override
 	public final Object getCommandAdditionalResult(final BaseEntry<?> entry, final ControlCommand<?> command, final BaseObject arguments) {
-		
+
 		{
 			// run foreign command - type knows how to execute it!
 			final Object typeInstance = Base.getJava(command.getAttributes(), "typeInstance", null);
@@ -508,20 +518,20 @@ final class TypeImpl extends AbstractType {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	@Override
 	public final BaseObject getCommandAttributes(final String key) {
-		
+
 		final BaseObject kindaCommand = this.baseGet(key, BaseObject.UNDEFINED);
 		if (!(kindaCommand instanceof TypeCommand)) {
 			return null;
 		}
 		return ((TypeCommand) kindaCommand).getAttributes();
 	}
-	
+
 	@Override
 	public final ControlCommandset getCommandsAdditional(final BaseEntry<?> entry, ControlCommandset target, final Set<String> include, Set<String> exclude) {
-		
+
 		if (this.commands != null) {
 			final ExecProcess ctx = Exec.currentProcess();
 			ctx.vmFrameEntryExFull();
@@ -561,18 +571,21 @@ final class TypeImpl extends AbstractType {
 		}
 		return super.getCommandsAdditional(entry, target, include, exclude);
 	}
-	
+
 	@Override
 	public final ControlFieldset<?> getFieldsetCreate() {
-		
+
 		if (this.fieldsetCreate == null) {
 			synchronized (this.formCreate) {
 				if (this.fieldsetCreate == null) {
 					final ControlFieldset<?> fieldset = TypeImpl.getFieldsetFromMap(this.formCreate, "fields", null);
 					if (fieldset == null) {
-						this.fieldsetCreate = TypeImpl.getFieldsetFromMap(this.formModify, "fields", this.parent == null
-							? null
-							: this.parent.getFieldsetCreate());
+						this.fieldsetCreate = TypeImpl.getFieldsetFromMap(
+								this.formModify,
+								"fields",
+								this.parent == null
+									? null
+									: this.parent.getFieldsetCreate());
 						if (this.fieldsetCreate == null) {
 							this.fieldsetCreate = TypeImpl.NULL_FIELDSET;
 						}
@@ -593,10 +606,10 @@ final class TypeImpl extends AbstractType {
 			? null
 			: this.fieldsetCreate;
 	}
-	
+
 	@Override
 	public final ControlFieldset<?> getFieldsetDelete() {
-		
+
 		final ControlFieldset<?> fieldset;
 		final String fieldsetSource = Base.getString(this.formDelete, "fields", "").trim();
 		if (fieldsetSource.length() == 0) {
@@ -619,22 +632,25 @@ final class TypeImpl extends AbstractType {
 		}
 		return ControlFieldset.createFieldset(fieldset, parentFieldset);
 	}
-	
+
 	@Override
 	public final ControlFieldset<?> getFieldsetLoad() {
-		
+
 		return this.fieldsetLoad;
 	}
-	
+
 	@Override
 	public final ControlFieldset<?> getFieldsetProperties() {
-		
+
 		if (this.fieldsetModify == null) {
 			synchronized (this.formModify) {
 				if (this.fieldsetModify == null) {
-					final ControlFieldset<?> fieldset = TypeImpl.getFieldsetFromMap(this.formModify, "fields", this.parent == null
-						? null
-						: this.parent.getFieldsetProperties());
+					final ControlFieldset<?> fieldset = TypeImpl.getFieldsetFromMap(
+							this.formModify,
+							"fields",
+							this.parent == null
+								? null
+								: this.parent.getFieldsetProperties());
 					if (fieldset == null) {
 						this.fieldsetModify = TypeImpl.NULL_FIELDSET;
 						return null;
@@ -648,22 +664,22 @@ final class TypeImpl extends AbstractType {
 			? null
 			: this.fieldsetModify;
 	}
-	
+
 	@Override
 	public final Collection<String> getReplacements() {
-		
+
 		return this.replacements;
 	}
-	
+
 	@Override
 	public final BaseMessage getResource(final String key) throws Throwable {
-		
+
 		return this.resources.apply(key);
 	}
-	
+
 	@Override
 	public final BaseObject getResponse(final ExecProcess process, final BaseEntry<?> entry, final BaseObject content) {
-		
+
 		if (this.responseFilter == null) {
 			if (this.parent == null) {
 				return content;
@@ -676,10 +692,10 @@ final class TypeImpl extends AbstractType {
 		ctx.contextCreateMutableBinding("content", content, false);
 		try {
 			return Act.run(ctx, new Function<ProgramPart, BaseObject>() {
-				
+
 				@Override
 				public BaseObject apply(final ProgramPart responseFilter) {
-					
+
 					return responseFilter.execCallPreparedInilne(ctx);
 				}
 			}, this.responseFilter);
@@ -690,10 +706,10 @@ final class TypeImpl extends AbstractType {
 			throw new RuntimeException(t);
 		}
 	}
-	
+
 	@Override
 	public final ReplyAnswer getResponse(final ServeRequest query, final BaseEntry<?> entry) {
-		
+
 		final ExecProcess ctx = Exec.currentProcess();
 		final Context context = Context.getContext(ctx);
 		if (this.anonymousResponse && context.getSessionState() < AuthLevels.AL_AUTHORIZED_NORMAL) {
@@ -727,11 +743,10 @@ final class TypeImpl extends AbstractType {
 				final BaseMap result = new BaseNativeObject();
 				result.baseDefine("title", title);
 				result.baseDefine("body", rendered);
-				final ReplyAnswer response = Reply
-						.object(
-								"IMPL", //
-								query,
-								result)//
+				final ReplyAnswer response = Reply.object(
+						"IMPL", //
+						query,
+						result)//
 						.setTitle(title)//
 						.setContentName(name)//
 						.setContentID(key)//
@@ -778,11 +793,10 @@ final class TypeImpl extends AbstractType {
 					: response;
 			}
 			if (object instanceof TransferBuffer) {
-				final ReplyAnswer response = Reply
-						.binary(
-								"IMPL", //
-								query,
-								(TransferBuffer) object)//
+				final ReplyAnswer response = Reply.binary(
+						"IMPL", //
+						query,
+						(TransferBuffer) object)//
 						.setTitle(title)//
 						.setContentName(name)//
 						.setContentID(key)//
@@ -797,11 +811,10 @@ final class TypeImpl extends AbstractType {
 					: response;
 			}
 			if (object instanceof TransferCopier) {
-				final ReplyAnswer response = Reply
-						.binary(
-								"IMPL", //
-								query,
-								(TransferCopier) object)//
+				final ReplyAnswer response = Reply.binary(
+						"IMPL", //
+						query,
+						(TransferCopier) object)//
 						.setTitle(title)//
 						.setContentName(name)//
 						.setContentID(key)//
@@ -816,11 +829,10 @@ final class TypeImpl extends AbstractType {
 					: response;
 			}
 			{
-				final ReplyAnswer response = Reply
-						.object(
-								"IMPL", //
-								query,
-								object)//
+				final ReplyAnswer response = Reply.object(
+						"IMPL", //
+						query,
+						object)//
 						.setTitle(title)//
 						.setContentName(name)//
 						.setContentID(key)//
@@ -860,10 +872,10 @@ final class TypeImpl extends AbstractType {
 			throw new RuntimeException(t);
 		}
 	}
-	
+
 	@Override
 	public final boolean getTypeBehaviorAutoRecalculate() {
-		
+
 		if (this.behaviorAutoRecalculate == -1) {
 			final boolean autoRecalculate = Convert.MapEntry.toBoolean(this.getAttributes(), "autotouch", false);
 			this.behaviorAutoRecalculate = autoRecalculate
@@ -873,10 +885,10 @@ final class TypeImpl extends AbstractType {
 		}
 		return this.behaviorAutoRecalculate != 0;
 	}
-	
+
 	@Override
 	public final boolean getTypeBehaviorHandleAllIncoming() {
-		
+
 		if (this.behaviorHandleAllIncoming == -1) {
 			if (this.responseBehavior == null && this.parent != null) {
 				return this.parent.getTypeBehaviorHandleAllIncoming();
@@ -889,10 +901,10 @@ final class TypeImpl extends AbstractType {
 		}
 		return this.behaviorHandleAllIncoming != 0;
 	}
-	
+
 	@Override
 	public final boolean getTypeBehaviorHandleAnyThrough() {
-		
+
 		if (this.behaviorHandleAnyThrough == -1) {
 			if (this.responseBehavior == null && this.parent != null) {
 				return this.parent.getTypeBehaviorHandleAnyThrough();
@@ -905,10 +917,10 @@ final class TypeImpl extends AbstractType {
 		}
 		return this.behaviorHandleAnyThrough != 0;
 	}
-	
+
 	@Override
 	public final boolean getTypeBehaviorHandleToParent() {
-		
+
 		if (this.behaviorHandleToParent == -1) {
 			if (this.responseBehavior == null && this.parent != null) {
 				return this.parent.getTypeBehaviorHandleToParent();
@@ -921,10 +933,10 @@ final class TypeImpl extends AbstractType {
 		}
 		return this.behaviorHandleToParent != 0;
 	}
-	
+
 	@Override
 	public final String getTypeBehaviorListingSort() {
-		
+
 		if (this.behaviorSort == null) {
 			final String sort = Base.getString(this.getAttributes(), "sort", TypeImpl.NULL_SORT);
 			this.behaviorSort = sort == TypeImpl.NULL_SORT || TypeImpl.NULL_SORT.equals(sort)
@@ -933,52 +945,52 @@ final class TypeImpl extends AbstractType {
 		}
 		return this.behaviorSort;
 	}
-	
+
 	@Override
 	public final int getTypeBehaviorResponseCacheClientTtl() {
-		
+
 		if (this.behaviorCacheClientTtl == -2) {
 			if (this.responseBehavior == null && this.parent != null) {
 				return this.parent.getTypeBehaviorResponseCacheClientTtl();
 			}
-			this.behaviorCacheClientTtl = (int) (Convert.MapEntry.toPeriod(this.responseBehavior, "ttl", 2L * 60L * 60L * 1000L) / 1000L);
+			this.behaviorCacheClientTtl = (int) (Convert.MapEntry.toPeriod(this.responseBehavior, "ttl", 2L * 60L * 60_000L) / 1000L);
 		}
 		return this.behaviorCacheClientTtl;
 	}
-	
+
 	@Override
 	public final long getTypeBehaviorResponseCacheServerTtl() {
-		
+
 		if (this.behaviorCacheServerTtl == -2) {
 			if (this.responseBehavior == null && this.parent != null) {
 				return this.parent.getTypeBehaviorResponseCacheServerTtl();
 			}
-			this.behaviorCacheServerTtl = (int) (Convert.MapEntry.toPeriod(this.responseBehavior, "cache", 2L * 60L * 60L * 1000L) / 1000L);
+			this.behaviorCacheServerTtl = (int) (Convert.MapEntry.toPeriod(this.responseBehavior, "cache", 2L * 60L * 60_000L) / 1000L);
 		}
 		return this.behaviorCacheServerTtl;
 	}
-	
+
 	@Override
 	public final boolean getTypeBehaviorResponseFiltering() {
-		
+
 		return this.responseFilter != null || this.parent != null && this.parent.getTypeBehaviorResponseFiltering();
 	}
-	
+
 	@Override
 	public final long getTypeModificationDate() {
-		
+
 		return this.modified;
 	}
-	
+
 	@Override
 	public BaseObject getTypePrototypeObject() {
-		
+
 		return this.typeInheritancePrototype;
 	}
-	
+
 	@Override
 	public final Collection<String> getValidChildrenTypeNames() {
-		
+
 		if (this.childrenTypes == null) {
 			if (this.parent == null) {
 				return null;
@@ -987,10 +999,10 @@ final class TypeImpl extends AbstractType {
 		}
 		return this.childrenTypes;
 	}
-	
+
 	@Override
 	public final Collection<String> getValidParentsTypeNames() {
-		
+
 		if (this.parentsTypes == null) {
 			if (this.parent == null) {
 				return null;
@@ -999,10 +1011,10 @@ final class TypeImpl extends AbstractType {
 		}
 		return this.parentsTypes;
 	}
-	
+
 	@Override
 	public final Collection<Integer> getValidStateList() {
-		
+
 		if (this.stateList == null) {
 			final Collection<Integer> stateList = super.getValidStateList();
 			if (stateList == null) {
@@ -1015,17 +1027,17 @@ final class TypeImpl extends AbstractType {
 			? null
 			: this.stateList;
 	}
-	
+
 	@Override
 	public final boolean hasDeletionForm() {
-		
+
 		assert this.formDelete != null : "NULL value is unexpected here!";
 		return !this.formDelete.baseIsPrimitive() || this.parent != null && this.parent.hasDeletionForm();
 	}
-	
+
 	@Override
 	public final void onBeforeCreate(final BaseChange change, final BaseObject data) {
-		
+
 		final BaseObject changeData = change.getData();
 		if (Base.getInt(changeData, "$state", -1) < 0) {
 			// if (changeData.baseGet( "$state", null ) == null) {
@@ -1072,10 +1084,10 @@ final class TypeImpl extends AbstractType {
 			}
 		}
 	}
-	
+
 	@Override
 	public final void onBeforeDelete(final BaseEntry<?> entry) {
-		
+
 		try {
 			entry.baseCall("onBeforeEntryDelete", true);
 		} catch (final Throwable e) {
@@ -1107,10 +1119,10 @@ final class TypeImpl extends AbstractType {
 			this.parent.onBeforeDelete(entry);
 		}
 	}
-	
+
 	@Override
 	public final void onBeforeModify(final BaseEntry<?> entry, final BaseChange change, final BaseObject data) {
-		
+
 		if (this.parent != null) {
 			this.parent.onBeforeModify(entry, change, data);
 		}
@@ -1140,10 +1152,10 @@ final class TypeImpl extends AbstractType {
 		ctx.contextCreateMutableBinding("data", data, false);
 		try {
 			Act.run(ctx, new Function<ProgramPart, BaseObject>() {
-				
+
 				@Override
 				public BaseObject apply(final ProgramPart program) {
-					
+
 					return program.execCallPreparedInilne(ctx);
 				}
 			}, script);
@@ -1153,40 +1165,40 @@ final class TypeImpl extends AbstractType {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	@Override
 	public final void scriptCommandFormPrepare(final String key, final BaseEntry<?> entry, final BaseObject parameters) {
-		
+
 		final BaseObject kindaCommand = entry.baseGet(key, BaseObject.UNDEFINED);
 		if (!(kindaCommand instanceof TypeCommand)) {
 			return;
 		}
 		final TypeCommand typeCommand = (TypeCommand) kindaCommand;
 		final BaseObject scriptSource = Base.get(typeCommand.getForm(), "prepare", BaseObject.UNDEFINED);
-		
+
 		if (scriptSource == BaseObject.UNDEFINED) {
 			return;
 		}
-		
+
 		final ProgramPart script = scriptSource.baseValue() instanceof ProgramPart
 			? (ProgramPart) scriptSource.baseValue()
 			/** FIXME: it looks that there's no language specified here! */
 			: this.server.createRenderer("TYPE{" + this.getKey() + "}/CMD{" + key + "}-PREPARE", scriptSource);
-		
+
 		if (script == null) {
 			return;
 		}
-		
+
 		final ExecProcess ctx = Exec.createProcess(Exec.currentProcess(), "Type form prepare context");
 		ctx.vmFrameEntryExCall(true, entry, script, ExecArgumentsEmpty.INSTANCE, ResultHandler.FA_BNN_NXT);
 		ctx.vmScopeDeriveContext(this.typeContext);
 		ctx.contextCreateMutableBinding("data", parameters, false);
 		try {
 			Act.run(ctx, new Function<ProgramPart, BaseObject>() {
-				
+
 				@Override
 				public BaseObject apply(final ProgramPart program) {
-					
+
 					return program.execCallPreparedInilne(ctx);
 				}
 			}, script);
@@ -1196,40 +1208,40 @@ final class TypeImpl extends AbstractType {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	@Override
 	public final void scriptCommandFormSubmit(final String key, final BaseEntry<?> entry, final BaseObject parameters) {
-		
+
 		final BaseObject kindaCommand = entry.baseGet(key, BaseObject.UNDEFINED);
 		if (!(kindaCommand instanceof TypeCommand)) {
 			return;
 		}
 		final TypeCommand typeCommand = (TypeCommand) kindaCommand;
 		final BaseObject scriptSource = Base.get(typeCommand.getForm(), "submit", BaseObject.UNDEFINED);
-		
+
 		if (scriptSource == BaseObject.UNDEFINED) {
 			return;
 		}
-		
+
 		final ProgramPart script = scriptSource.baseValue() instanceof ProgramPart
 			? (ProgramPart) scriptSource.baseValue()
 			/** FIXME: it looks that there's no language specified here! */
 			: this.server.createRenderer("TYPE{" + this.getKey() + "}/CMD{" + key + "}-SUBMIT", scriptSource);
-		
+
 		if (script == null) {
 			return;
 		}
-		
+
 		final ExecProcess ctx = Exec.createProcess(Exec.currentProcess(), "Type form submit context");
 		ctx.vmFrameEntryExCall(true, entry, script, ExecArgumentsEmpty.INSTANCE, ResultHandler.FA_BNN_NXT);
 		ctx.vmScopeDeriveContext(this.typeContext);
 		ctx.contextCreateMutableBinding("data", parameters, false);
 		try {
 			Act.run(ctx, new Function<ProgramPart, BaseObject>() {
-				
+
 				@Override
 				public BaseObject apply(final ProgramPart program) {
-					
+
 					return program.execCallPreparedInilne(ctx);
 				}
 			}, script);
@@ -1239,10 +1251,10 @@ final class TypeImpl extends AbstractType {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	@Override
 	public final void scriptPrepareCreate(final BaseChange change, final BaseObject data) {
-		
+
 		if (this.parent != null) {
 			this.parent.scriptPrepareCreate(change, data);
 		}
@@ -1253,20 +1265,20 @@ final class TypeImpl extends AbstractType {
 				? check
 				: Base.get(this.formModify, "prepare", BaseObject.UNDEFINED);
 		}
-		
+
 		if (scriptSource == BaseObject.UNDEFINED) {
 			return;
 		}
-		
+
 		final ProgramPart script = scriptSource.baseValue() instanceof ProgramPart
 			? (ProgramPart) scriptSource.baseValue()
 			/** FIXME: it looks that there's no language specified here! */
 			: this.server.createRenderer("TYPE{" + this.getKey() + "}/CREATE-PREPARE", scriptSource);
-		
+
 		if (script == null) {
 			return;
 		}
-		
+
 		final ExecProcess ctx = Exec.currentProcess();
 		ctx.vmFrameEntryExCall(true, new TypeEntryDummy(this, change), script, ExecArgumentsEmpty.INSTANCE, ResultHandler.FA_BNN_NXT);
 		ctx.vmScopeDeriveContext(this.typeContext);
@@ -1280,28 +1292,28 @@ final class TypeImpl extends AbstractType {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	@Override
 	public final void scriptPrepareDelete(final BaseEntry<?> entry, final BaseObject data) {
-		
+
 		if (this.parent != null) {
 			this.parent.scriptPrepareDelete(entry, data);
 		}
 		final BaseObject scriptSource = Base.get(this.formDelete, "prepare", BaseObject.UNDEFINED);
-		
+
 		if (scriptSource == BaseObject.UNDEFINED) {
 			return;
 		}
-		
+
 		final ProgramPart script = scriptSource.baseValue() instanceof ProgramPart
 			? (ProgramPart) scriptSource.baseValue()
 			/** FIXME: it looks that there's no language specified here! */
 			: this.server.createRenderer("TYPE{" + this.getKey() + "}/DELETE-PREPARE", scriptSource);
-		
+
 		if (script == null) {
 			return;
 		}
-		
+
 		final ExecProcess ctx = Exec.currentProcess();
 		ctx.vmFrameEntryExCall(true, entry, script, ExecArgumentsEmpty.INSTANCE, ResultHandler.FA_BNN_NXT);
 		ctx.vmScopeDeriveContext(this.typeContext);
@@ -1314,28 +1326,28 @@ final class TypeImpl extends AbstractType {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	@Override
 	public final void scriptPrepareModify(final BaseEntry<?> entry, final BaseChange change, final BaseObject data) {
-		
+
 		if (this.parent != null) {
 			this.parent.scriptPrepareModify(entry, change, data);
 		}
 		final BaseObject scriptSource = Base.get(this.formModify, "prepare", BaseObject.UNDEFINED);
-		
+
 		if (scriptSource == BaseObject.UNDEFINED) {
 			return;
 		}
-		
+
 		final ProgramPart script = scriptSource.baseValue() instanceof ProgramPart
 			? (ProgramPart) scriptSource.baseValue()
 			/** FIXME: it looks that there's no language specified here! */
 			: this.server.createRenderer("TYPE{" + this.getKey() + "}/MODIFY-PREPARE", scriptSource);
-		
+
 		if (script == null) {
 			return;
 		}
-		
+
 		final ExecProcess ctx = Exec.currentProcess();
 		ctx.vmFrameEntryExCall(true, entry, script, ExecArgumentsEmpty.INSTANCE, ResultHandler.FA_BNN_NXT);
 		ctx.vmScopeDeriveContext(this.typeContext);
@@ -1349,28 +1361,28 @@ final class TypeImpl extends AbstractType {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	@Override
 	public final void scriptSubmitCreate(final BaseChange change, final BaseObject data) {
-		
+
 		if (this.parent != null) {
 			this.parent.scriptSubmitCreate(change, data);
 		}
 		final BaseObject scriptSource = Base.get(this.formCreate, "submit", Base.get(this.formModify, "submit", BaseObject.UNDEFINED));
-		
+
 		if (scriptSource == BaseObject.UNDEFINED) {
 			return;
 		}
-		
+
 		final ProgramPart script = scriptSource.baseValue() instanceof ProgramPart
 			? (ProgramPart) scriptSource.baseValue()
 			/** FIXME: it looks that there's no language specified here! */
 			: this.server.createRenderer("TYPE{" + this.getKey() + "}/CREATE-SUBMIT", scriptSource);
-		
+
 		if (script == null) {
 			return;
 		}
-		
+
 		final ExecProcess ctx = Exec.currentProcess();
 		ctx.vmFrameEntryExCall(true, new TypeEntryDummy(this, change), script, ExecArgumentsEmpty.INSTANCE, ResultHandler.FA_BNN_NXT);
 		ctx.vmScopeDeriveContext(this.typeContext);
@@ -1384,28 +1396,28 @@ final class TypeImpl extends AbstractType {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	@Override
 	public final void scriptSubmitDelete(final BaseEntry<?> entry, final BaseObject data) {
-		
+
 		if (this.parent != null) {
 			this.parent.scriptSubmitDelete(entry, data);
 		}
 		final BaseObject scriptSource = Base.get(this.formDelete, "submit", BaseObject.UNDEFINED);
-		
+
 		if (scriptSource == BaseObject.UNDEFINED) {
 			return;
 		}
-		
+
 		final ProgramPart script = scriptSource.baseValue() instanceof ProgramPart
 			? (ProgramPart) scriptSource.baseValue()
 			/** FIXME: it looks that there's no language specified here! */
 			: this.server.createRenderer("TYPE{" + this.getKey() + "}/DELETE-SUBMIT", scriptSource);
-		
+
 		if (script == null) {
 			return;
 		}
-		
+
 		final ExecProcess ctx = Exec.currentProcess();
 		ctx.vmFrameEntryExCall(true, entry, script, ExecArgumentsEmpty.INSTANCE, ResultHandler.FA_BNN_NXT);
 		ctx.vmScopeDeriveContext(this.typeContext);
@@ -1418,28 +1430,28 @@ final class TypeImpl extends AbstractType {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	@Override
 	public final void scriptSubmitModify(final BaseEntry<?> entry, final BaseChange change, final BaseObject data) {
-		
+
 		if (this.parent != null) {
 			this.parent.scriptSubmitModify(entry, change, data);
 		}
 		final BaseObject scriptSource = Base.get(this.formModify, "submit", BaseObject.UNDEFINED);
-		
+
 		if (scriptSource == BaseObject.UNDEFINED) {
 			return;
 		}
-		
+
 		final ProgramPart script = scriptSource.baseValue() instanceof ProgramPart
 			? (ProgramPart) scriptSource.baseValue()
 			/** FIXME: it looks that there's no language specified here! */
 			: this.server.createRenderer("TYPE{" + this.getKey() + "}/MODIFY-SUBMIT", scriptSource);
-		
+
 		if (script == null) {
 			return;
 		}
-		
+
 		final ExecProcess ctx = Exec.currentProcess();
 		ctx.vmFrameEntryExCall(true, entry, script, ExecArgumentsEmpty.INSTANCE, ResultHandler.FA_BNN_NXT);
 		ctx.vmScopeDeriveContext(this.typeContext);
@@ -1453,31 +1465,31 @@ final class TypeImpl extends AbstractType {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	@Override
 	public String toString() {
-		
+
 		return "[object " + this.baseClass() + "(" + this.getKey() + ")]";
 	}
-	
+
 	@Override
 	public final void typeStart() {
-		
+
 		if (this.commands != null) {
 			for (final TypeCommand command : this.commands) {
 				command.start();
 			}
 		}
 	}
-	
+
 	@Override
 	public final void typeStop() {
-		
+
 		if (this.commands != null) {
 			for (final TypeCommand command : this.commands) {
 				command.stop();
 			}
 		}
 	}
-	
+
 }
