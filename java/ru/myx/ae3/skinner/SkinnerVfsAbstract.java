@@ -5,7 +5,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.TreeMap;
 
-import ru.myx.ae3.Engine;
 import ru.myx.ae3.act.Context;
 import ru.myx.ae3.answer.AbstractReplyException;
 import ru.myx.ae3.answer.Reply;
@@ -104,6 +103,125 @@ public abstract class SkinnerVfsAbstract extends SkinnerAbstract {
 		this.fieldsetFile = folder.relative("skin.fieldset.xml", TreeLinkType.PUBLIC_TREE_REFERENCE);
 	}
 
+	@Override
+	public final LayoutDefinition<TargetContext<?>> getLayoutDefinition(final String name) {
+
+		return this.layouts.get(name);
+	}
+
+	@Override
+	public final Entry getRoot() {
+
+		return this.folder;
+	}
+
+	@Override
+	public boolean scan() {
+
+		if (this.folder == null || !this.folder.isExist() || !this.folder.isContainer()) {
+			return false;
+		}
+		if (this.settingsFile.isExist()) {
+			if (this.settingsDate != this.settingsFile.getLastModified()) {
+				this.settingsDate = this.settingsFile.getLastModified();
+				this.settings = Xml.toMap(
+						"skinnerScan(" + this.name + ")", //
+						this.settingsFile.toBinary().getBinaryContent().baseValue(),
+						null /* Charset.defaultCharset() */,
+						null,
+						new BaseNativeObject(),
+						null,
+						null);
+				final String type = Base.getString(this.settings, "type", "");
+				if (this.previousType != null && !this.previousType.equals(type)) {
+					return false;
+				}
+				this.previousType = type;
+				/** charset property */
+				this.charset = Charset.forName(Base.getString(this.settings, "charset", Charset.defaultCharset().name()));
+				/** prototype property */
+				{
+					final String prototypeSkin = Base.getString(this.settings, "prototype", "skin-standard").trim();
+					this.prototypeSkin = prototypeSkin.length() == 0
+						? null
+						: prototypeSkin;
+				}
+				/** imports */
+				{
+					final BaseArray importMappings;
+					{
+						final BaseObject parameter = this.settings.baseGet("import", BaseObject.UNDEFINED);
+						final BaseArray array = parameter.baseArray();
+						if (array != null) {
+							importMappings = array;
+						} else //
+						if (Base.getBoolean(parameter, "package", false)) {
+							importMappings = new BaseNativeArray(parameter);
+						} else {
+							importMappings = BaseObject.createArray(0);
+						}
+					}
+					Map<String, String> mapping = null;
+					for (int i = importMappings.length() - 1; i >= 0; --i) {
+						final BaseObject oneImport = importMappings.baseGet(i, BaseObject.UNDEFINED);
+						final String packageName = Base.getString(oneImport, "package", "").trim();
+						final String namespaceName = Base.getString(oneImport, "namespace", "").trim();
+						if (packageName.length() == 0 || namespaceName.length() == 0) {
+							continue;
+						}
+						if (mapping == null) {
+							mapping = new TreeMap<>();
+						}
+						mapping.put(namespaceName, packageName);
+					}
+					this.importMappings = mapping;
+				}
+				/** other properties */
+				this.defaultDocument = Base.getString(this.settings, "default", this.defaultDefaultDocument);
+				this.defaultContentType = Base.getString(this.settings, "contentType", this.defaultDefaultContentType);
+				/** not JS rules: 'false' '0' 'no' should mean FALSE */
+				this.requireSecure = Convert.MapEntry.toBoolean(this.settings, "secure", false);
+				/** not JS rules: 'false' '0' 'no' should mean FALSE */
+				this.requireAuth = Convert.MapEntry.toBoolean(this.settings, "auth", false);
+
+				this.title = this.settings.baseGet("title", this.title);
+			}
+		} else {
+			if (this.settingsDate != -1L) {
+				this.settingsDate = -1L;
+				this.settings = new BaseNativeObject();
+				this.charset = Charset.defaultCharset();
+				this.prototypeSkin = null;
+				this.importMappings = null;
+				this.defaultDocument = this.defaultDefaultDocument;
+				this.defaultContentType = this.defaultDefaultContentType;
+				this.requireSecure = false;
+				this.requireAuth = false;
+				this.title = BaseObject.UNDEFINED;
+			}
+		}
+		try {
+			if (this.fieldsetFile.isExist()) {
+				if (this.fieldsetDate != this.fieldsetFile.getLastModified()) {
+					this.fieldsetDate = this.fieldsetFile.getLastModified();
+					this.fieldset = ControlFieldset.materializeFieldset(this.fieldsetFile.toBinary().getBinaryContent().baseValue().toString(this.charset));
+					this.useFieldset = this.fieldset.size() > 0;
+				}
+			} else {
+				if (this.fieldsetDate != -1L) {
+					this.fieldsetDate = -1L;
+					this.fieldset = this.fieldset.isEmpty()
+						? this.fieldset
+						: ControlFieldset.createFieldset();
+					this.useFieldset = false;
+				}
+			}
+		} catch (final Throwable t) {
+			Report.exception(SkinnerVfsAbstract.OWNER, "[" + this.name + "] error while scanning for fieldset changes", t);
+		}
+		return true;
+	}
+
 	/** @param identifier
 	 *            - without leading slash
 	 * @param query
@@ -132,18 +250,6 @@ public abstract class SkinnerVfsAbstract extends SkinnerAbstract {
 					.setNoCaching()//
 		) //
 				.setFinal();
-	}
-
-	@Override
-	public final LayoutDefinition<TargetContext<?>> getLayoutDefinition(final String name) {
-
-		return this.layouts.get(name);
-	}
-
-	@Override
-	public final Entry getRoot() {
-
-		return this.folder;
 	}
 
 	/** @param query
@@ -257,113 +363,6 @@ public abstract class SkinnerVfsAbstract extends SkinnerAbstract {
 					.setEncoding(StandardCharsets.UTF_8)//
 					.setFlags(flags);
 		}
-	}
-
-	@Override
-	public boolean scan() {
-
-		if (this.folder == null || !this.folder.isExist() || !this.folder.isContainer()) {
-			return false;
-		}
-		if (this.settingsFile.isExist()) {
-			if (this.settingsDate != this.settingsFile.getLastModified()) {
-				this.settingsDate = this.settingsFile.getLastModified();
-				this.settings = Xml.toMap(
-						"skinnerScan(" + this.name + ")", //
-						this.settingsFile.toBinary().getBinaryContent().baseValue(),
-						null /* Engine.CHARSET_DEFAULT */,
-						null,
-						new BaseNativeObject(),
-						null,
-						null);
-				final String type = Base.getString(this.settings, "type", "");
-				if (this.previousType != null && !this.previousType.equals(type)) {
-					return false;
-				}
-				this.previousType = type;
-				/** charset property */
-				this.charset = Charset.forName(Base.getString(this.settings, "charset", Engine.ENCODING_DEFAULT));
-				/** prototype property */
-				{
-					final String prototypeSkin = Base.getString(this.settings, "prototype", "skin-standard").trim();
-					this.prototypeSkin = prototypeSkin.length() == 0
-						? null
-						: prototypeSkin;
-				}
-				/** imports */
-				{
-					final BaseArray importMappings;
-					{
-						final BaseObject parameter = this.settings.baseGet("import", BaseObject.UNDEFINED);
-						final BaseArray array = parameter.baseArray();
-						if (array != null) {
-							importMappings = array;
-						} else //
-						if (Base.getBoolean(parameter, "package", false)) {
-							importMappings = new BaseNativeArray(parameter);
-						} else {
-							importMappings = BaseObject.createArray(0);
-						}
-					}
-					Map<String, String> mapping = null;
-					for (int i = importMappings.length() - 1; i >= 0; --i) {
-						final BaseObject oneImport = importMappings.baseGet(i, BaseObject.UNDEFINED);
-						final String packageName = Base.getString(oneImport, "package", "").trim();
-						final String namespaceName = Base.getString(oneImport, "namespace", "").trim();
-						if (packageName.length() == 0 || namespaceName.length() == 0) {
-							continue;
-						}
-						if (mapping == null) {
-							mapping = new TreeMap<>();
-						}
-						mapping.put(namespaceName, packageName);
-					}
-					this.importMappings = mapping;
-				}
-				/** other properties */
-				this.defaultDocument = Base.getString(this.settings, "default", this.defaultDefaultDocument);
-				this.defaultContentType = Base.getString(this.settings, "contentType", this.defaultDefaultContentType);
-				/** not JS rules: 'false' '0' 'no' should mean FALSE */
-				this.requireSecure = Convert.MapEntry.toBoolean(this.settings, "secure", false);
-				/** not JS rules: 'false' '0' 'no' should mean FALSE */
-				this.requireAuth = Convert.MapEntry.toBoolean(this.settings, "auth", false);
-
-				this.title = this.settings.baseGet("title", this.title);
-			}
-		} else {
-			if (this.settingsDate != -1L) {
-				this.settingsDate = -1L;
-				this.settings = new BaseNativeObject();
-				this.charset = Charset.defaultCharset();
-				this.prototypeSkin = null;
-				this.importMappings = null;
-				this.defaultDocument = this.defaultDefaultDocument;
-				this.defaultContentType = this.defaultDefaultContentType;
-				this.requireSecure = false;
-				this.requireAuth = false;
-				this.title = BaseObject.UNDEFINED;
-			}
-		}
-		try {
-			if (this.fieldsetFile.isExist()) {
-				if (this.fieldsetDate != this.fieldsetFile.getLastModified()) {
-					this.fieldsetDate = this.fieldsetFile.getLastModified();
-					this.fieldset = ControlFieldset.materializeFieldset(this.fieldsetFile.toBinary().getBinaryContent().baseValue().toString(this.charset));
-					this.useFieldset = this.fieldset.size() > 0;
-				}
-			} else {
-				if (this.fieldsetDate != -1L) {
-					this.fieldsetDate = -1L;
-					this.fieldset = this.fieldset.isEmpty()
-						? this.fieldset
-						: ControlFieldset.createFieldset();
-					this.useFieldset = false;
-				}
-			}
-		} catch (final Throwable t) {
-			Report.exception(SkinnerVfsAbstract.OWNER, "[" + this.name + "] error while scanning for fieldset changes", t);
-		}
-		return true;
 	}
 
 }
