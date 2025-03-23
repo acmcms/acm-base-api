@@ -38,62 +38,62 @@ import ru.myx.ae3.xml.Xml;
  *         To change the template for this generated type comment go to Window>Preferences>Java>Code
  *         Generation>Code and Comments */
 final class SchedulerTask implements Runnable {
-
+	
 	static final int RESULT_RESCHEDULE = 2;
-
+	
 	static final int RESULT_UNKNOWN = 1;
-
+	
 	static final int RESULT_DONE = 0;
-
+	
 	static final int RESULT_EXCEPTION = -2;
-
+	
 	static final int RESULT_TIMEOUT = -3;
-
+	
 	static final int RESULT_ENTRY_DRAFT = -4;
-
+	
 	static final int RESULT_ENTRY_DEAD = -5;
-
+	
 	static final int SCHEDULE_STATE_WAITING = 0;
-
+	
 	static final int SCHEDULE_STATE_LAUNCHING = 1;
-
+	
 	static final int SCHEDULE_STATE_RUNNING = 2;
-
+	
 	private static final String OWNER = "SCHEDULER";
-
+	
 	/** >= 1 */
 	private static final int ACTIVE_SCHEDULER_MAX = Math.min(Engine.PARALLELISM, 4);
-
+	
 	private static volatile int activeSchedulerCount = 0;
-
+	
 	private final StorageImpl parent;
-
+	
 	private long lastCleanup = Engine.fastTime();
-
+	
 	private final LinkedList<SchedulerTaskResult> finished = new LinkedList<>();
-
+	
 	private final String tnQueue;
-
+	
 	private final String tnLog;
-
+	
 	private final boolean singleMode;
-
+	
 	private boolean destroyed = false;
-
+	
 	/** @param parent
 	 * @param singleMode
 	 * @param tnQueue
 	 * @param tnLog */
 	SchedulerTask(final StorageImpl parent, final boolean singleMode, final String tnQueue, final String tnLog) {
-
+		
 		this.parent = parent;
 		this.singleMode = singleMode;
 		this.tnQueue = tnQueue;
 		this.tnLog = tnLog;
 	}
-
+	
 	private void flushFinished(final Connection conn) throws Throwable {
-
+		
 		for (;;) {
 			final SchedulerTaskResult info;
 			synchronized (this.finished) {
@@ -159,10 +159,10 @@ final class SchedulerTask implements Runnable {
 			}
 		}
 	}
-
+	
 	@Override
 	public void run() {
-
+		
 		synchronized (SchedulerTask.class) {
 			if (SchedulerTask.activeSchedulerCount >= SchedulerTask.ACTIVE_SCHEDULER_MAX) {
 				if (!this.destroyed) {
@@ -358,19 +358,19 @@ final class SchedulerTask implements Runnable {
 			}
 		}
 	}
-
+	
 	@Override
 	public final String toString() {
-
+		
 		return SchedulerTask.OWNER + ", parent=" + this.parent;
 	}
-
+	
 	/** @param runner
 	 * @param scheduleid
 	 * @param schedule
 	 * @param result */
 	void enqueueResult(final Runnable runner, final String scheduleid, final long schedule, final BaseObject result) {
-
+		
 		final SchedulerTaskResult info;
 		if (result == null) {
 			info = new SchedulerTaskResult(scheduleid, schedule, SchedulerTask.RESULT_DONE, Xml.toXmlString("data", new BaseNativeObject(), false), 0L);
@@ -403,9 +403,7 @@ final class SchedulerTask implements Runnable {
 			this.finished.addLast(info);
 			try (final Connection conn = this.parent.nextConnection()) {
 				this.flushFinished(conn);
-			} catch (final Error e) {
-				throw e;
-			} catch (final RuntimeException e) {
+			} catch (final Error | RuntimeException e) {
 				throw e;
 			} catch (final Throwable e) {
 				throw new RuntimeException(e);
@@ -416,7 +414,7 @@ final class SchedulerTask implements Runnable {
 			}
 		}
 	}
-
+	
 	void start(final Connection conn,
 			final String scheduleid,
 			final long schedule,
@@ -425,7 +423,7 @@ final class SchedulerTask implements Runnable {
 			final String name,
 			final String command,
 			final BaseObject parameters) throws Exception {
-		
+
 		final BaseEntry<?> entry = this.parent.getStorage().getByGuid(objectid);
 		if (entry == null) {
 			Report.event(SchedulerTask.OWNER, "NO_ENTRY", "Entry (objectid=" + objectid + ") was not found!");
@@ -487,14 +485,14 @@ final class SchedulerTask implements Runnable {
 		final long left = schedule - Engine.fastTime();
 		if (left > 2_000L) {
 			Act.later(process, runner, left);
-
+			
 		} else {
 			Act.launch(process, runner);
 		}
 	}
-
+	
 	void stop() {
-
+		
 		this.destroyed = true;
 	}
 }
