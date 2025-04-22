@@ -14,41 +14,32 @@ import ru.myx.ae3.exec.ExecCallableFull;
 import ru.myx.ae3.exec.ExecProcess;
 import ru.myx.ae3.exec.ExecStateCode;
 
-/**
+/** @deprecated
  *
- * @deprecated
- *
- * @author myx
- *
- */
+ * @author myx */
 @Deprecated
 public final class Function_listLookup extends BaseFunctionAbstract implements ExecCallableFull {
-	
 	
 	@Override
 	public final int execArgumentsAcceptable() {
 		
-		
 		return 3;
 	}
-	
+
 	@Override
 	public int execArgumentsDeclared() {
 		
-		
 		return 1;
 	}
-	
+
 	@Override
 	public final int execArgumentsMinimal() {
 		
-		
 		return 1;
 	}
-	
+
 	@Override
 	public ExecStateCode execCallImpl(final ExecProcess ctx) {
-		
 		
 		final BaseObject lookup = ctx.baseGetFirst(null);
 		if (lookup == null || lookup.baseIsPrimitive()) {
@@ -68,29 +59,17 @@ public final class Function_listLookup extends BaseFunctionAbstract implements E
 		}
 		return ctx.vmSetCallResultString(acceptor.toString());
 	}
-	
+
 	@Override
 	public final boolean execIsConstant() {
 		
-		
 		return true;
 	}
-	
+
 	@Override
 	public Class<? extends Object> execResultClassJava() {
 		
-		
 		return String.class;
 	}
-	
-	@Override
-	public BaseObject execScope() {
-		
-		
-		/**
-		 * executes in real current scope
-		 */
-		return ExecProcess.GLOBAL;
-	}
-	
+
 }

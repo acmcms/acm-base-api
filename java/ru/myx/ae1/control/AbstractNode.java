@@ -12,7 +12,7 @@ import ru.myx.ae3.base.BaseArray;
 import ru.myx.ae3.control.ControlBasic;
 import ru.myx.ae3.control.command.ControlCommandset;
 import ru.myx.ae3.control.fieldset.ControlFieldset;
-import ru.myx.ae3.i3.Handler;
+import ru.myx.ae3.i3.RequestHandler;
 
 /**
  * @author myx
@@ -202,7 +202,7 @@ public abstract class AbstractNode extends AbstractControlEntry<AbstractNode> im
 	}
 	
 	@Override
-	public Handler substituteHandler() {
+	public RequestHandler substituteHandler() {
 		
 		return this;
 	}

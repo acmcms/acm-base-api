@@ -7,7 +7,6 @@ import ru.myx.ae3.Engine;
 import ru.myx.ae3.base.BaseFunctionAbstract;
 import ru.myx.ae3.base.BaseObject;
 import ru.myx.ae3.exec.ExecCallableBoth;
-import ru.myx.ae3.exec.ExecProcess;
 
 /** @author myx
  *
@@ -19,10 +18,10 @@ import ru.myx.ae3.exec.ExecProcess;
  *         \ - next character should be copied<br>
  *         all other characters just copied */
 public final class Function_formattedRandom extends BaseFunctionAbstract implements ExecCallableBoth.JavaStringJ1 {
-	
+
 	@Override
 	public String callSJ1(final BaseObject instance, final BaseObject argument) {
-		
+
 		final String format = argument.baseToJavaString();
 		if (format == null) {
 			return null;
@@ -52,9 +51,10 @@ public final class Function_formattedRandom extends BaseFunctionAbstract impleme
 						value = Engine.createRandom();
 						left = Integer.MAX_VALUE;
 					}
-					result.append(c == 'H'
-						? Integer.toHexString((value & 0x7FFFFFFF) % 16).toUpperCase()
-						: Integer.toHexString((value & 0x7FFFFFFF) % 16).toLowerCase());
+					result.append(
+							c == 'H'
+								? Integer.toHexString((value & 0x7FFFFFFF) % 16).toUpperCase()
+								: Integer.toHexString((value & 0x7FFFFFFF) % 16).toLowerCase());
 					value /= 16;
 					left /= 16;
 					continue;
@@ -64,9 +64,10 @@ public final class Function_formattedRandom extends BaseFunctionAbstract impleme
 						value = Engine.createRandom();
 						left = Integer.MAX_VALUE;
 					}
-					result.append(c == 'Z'
-						? Integer.toString((value & 0x7FFFFFFF) % 36, 36).toUpperCase()
-						: Integer.toString((value & 0x7FFFFFFF) % 36, 36).toLowerCase());
+					result.append(
+							c == 'Z'
+								? Integer.toString((value & 0x7FFFFFFF) % 36, 36).toUpperCase()
+								: Integer.toString((value & 0x7FFFFFFF) % 36, 36).toLowerCase());
 					value /= 36;
 					left /= 36;
 					continue;
@@ -79,17 +80,10 @@ public final class Function_formattedRandom extends BaseFunctionAbstract impleme
 		}
 		return result.toString();
 	}
-	
-	@Override
-	public Class<? extends String> execResultClassJava() {
-		
-		return String.class;
-	}
 
 	@Override
-	public BaseObject execScope() {
-		
-		/** executes in real current scope */
-		return ExecProcess.GLOBAL;
+	public Class<? extends String> execResultClassJava() {
+
+		return String.class;
 	}
 }

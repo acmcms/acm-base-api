@@ -10,7 +10,7 @@ import ru.myx.ae3.base.BaseObject;
 import ru.myx.ae3.control.ControlBasic;
 import ru.myx.ae3.control.ControlContainer;
 import ru.myx.ae3.control.fieldset.ControlFieldset;
-import ru.myx.ae3.i3.Handler;
+import ru.myx.ae3.i3.RequestHandler;
 import ru.myx.ae3.reflect.Reflect;
 
 /**
@@ -82,5 +82,5 @@ public interface ControlNode<T extends ControlNode<?>> extends ControlEntry<T>, 
 	/**
 	 * @return handler
 	 */
-	public Handler substituteHandler();
+	public RequestHandler substituteHandler();
 }

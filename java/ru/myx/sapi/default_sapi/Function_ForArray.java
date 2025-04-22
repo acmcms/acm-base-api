@@ -28,37 +28,37 @@ import ru.myx.ae3.exec.ResultHandler;
  *         ForArray(final Object object[, final int start[, final int limit[, final int step]]]) */
 @Deprecated
 public final class Function_ForArray extends BaseFunctionAbstract implements ExecCallableBoth.ExecStoreX {
-
+	
 	@Override
 	public final int execArgumentsAcceptable() {
-
+		
 		return 4;
 	}
-
+	
 	@Override
 	public int execArgumentsDeclared() {
-
+		
 		return 1;
 	}
-
+	
 	@Override
 	public final int execArgumentsMinimal() {
-
+		
 		return 1;
 	}
-
+	
 	@Override
 	public ExecStateCode execCallPrepare(final ExecProcess ctx, final BaseObject instance, final ResultHandler store, final boolean inline, final BaseArray arguments) {
-
+		
 		if (arguments == null) {
 			return store.execReturnUndefined(ctx);
 		}
-
+		
 		final int argumentCount = arguments.length();
 		if (argumentCount == 0) {
 			return store.execReturnUndefined(ctx);
 		}
-
+		
 		final BaseObject object = arguments.baseGetFirst(null);
 		assert object != null : "NULL java value!";
 		if (object.baseIsPrimitive()) {
@@ -73,17 +73,17 @@ public final class Function_ForArray extends BaseFunctionAbstract implements Exe
 		final int step = argumentCount > 3
 			? arguments.baseGet(3, null).baseToJavaInteger()
 			: 1;
-
+		
 		if (start == limit) {
 			return store.execReturnUndefined(ctx);
 		}
 		if (step <= 0) {
 			return store.execReturnUndefined(ctx);
 		}
-
+		
 		final int stackBase = ctx.ri0ASP;
 		ctx.vmFrameEntryExFull();
-
+		
 		ctx.vmScopeDeriveLocals();
 		ctx.contextCreateMutableBinding("First", BaseObject.TRUE, false);
 		done : {
@@ -104,7 +104,7 @@ public final class Function_ForArray extends BaseFunctionAbstract implements Exe
 									? BaseObject.TRUE
 									: BaseObject.FALSE,
 								false);
-
+						
 						final ExecStateCode code = ctx.vmStateFinalizeFrames(Context.sourceRender(ctx), stackBase, true);
 						if (code != null) {
 							return code;
@@ -124,10 +124,13 @@ public final class Function_ForArray extends BaseFunctionAbstract implements Exe
 					ctx.contextCreateMutableBinding("Current", Base.forUnknown(V[i]), false);
 					ctx.contextCreateMutableBinding("CurrentIndex", Base.forInteger(i), false);
 					i += step;
-					ctx.contextCreateMutableBinding("Last", i >= till
-						? BaseObject.TRUE
-						: BaseObject.FALSE, false);
-
+					ctx.contextCreateMutableBinding(
+							"Last",
+							i >= till
+								? BaseObject.TRUE
+								: BaseObject.FALSE,
+							false);
+					
 					final ExecStateCode code = ctx.vmStateFinalizeFrames(Context.sourceRender(ctx), stackBase, true);
 					if (code != null) {
 						return code;
@@ -146,10 +149,13 @@ public final class Function_ForArray extends BaseFunctionAbstract implements Exe
 					ctx.contextCreateMutableBinding("Current", Base.forString(V[i].trim()), false);
 					ctx.contextCreateMutableBinding("CurrentIndex", Base.forInteger(i), false);
 					i += step;
-					ctx.contextCreateMutableBinding("Last", i >= till
-						? BaseObject.TRUE
-						: BaseObject.FALSE, false);
-
+					ctx.contextCreateMutableBinding(
+							"Last",
+							i >= till
+								? BaseObject.TRUE
+								: BaseObject.FALSE,
+							false);
+					
 					final ExecStateCode code = ctx.vmStateFinalizeFrames(Context.sourceRender(ctx), stackBase, true);
 					if (code != null) {
 						return code;
@@ -159,27 +165,20 @@ public final class Function_ForArray extends BaseFunctionAbstract implements Exe
 				break done;
 			}
 		}
-
+		
 		return ctx.vmStateFinalizeFrames(store.execReturnUndefined(ctx), stackBase, inline);
 	}
-
+	
 	@Override
 	public final boolean execIsConstant() {
-
+		
 		return true;
 	}
-
+	
 	@Override
 	public Class<? extends Object> execResultClassJava() {
-
+		
 		return String.class;
 	}
-
-	@Override
-	public BaseObject execScope() {
-
-		/** executes in real current scope */
-		return ExecProcess.GLOBAL;
-	}
-
+	
 }

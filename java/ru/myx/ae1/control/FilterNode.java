@@ -15,7 +15,7 @@ import ru.myx.ae3.control.ControlBasic;
 import ru.myx.ae3.control.command.ControlCommand;
 import ru.myx.ae3.control.command.ControlCommandset;
 import ru.myx.ae3.control.fieldset.ControlFieldset;
-import ru.myx.ae3.i3.Handler;
+import ru.myx.ae3.i3.RequestHandler;
 import ru.myx.ae3.serve.ServeRequest;
 
 /**
@@ -291,7 +291,7 @@ public class FilterNode<T extends FilterNode<?>> extends BaseHostFilter<ControlN
 	}
 	
 	@Override
-	public Handler substituteHandler() {
+	public RequestHandler substituteHandler() {
 		
 		
 		return this.parent.substituteHandler();

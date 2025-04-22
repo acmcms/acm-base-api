@@ -9,7 +9,7 @@ import ru.myx.ae3.base.BaseNativeObject;
 import ru.myx.ae3.base.BaseObject;
 import ru.myx.ae3.control.ControlActor;
 import ru.myx.ae3.control.command.ControlCommandset;
-import ru.myx.ae3.i3.Handler;
+import ru.myx.ae3.i3.RequestHandler;
 import ru.myx.ae3.produce.Reproducible;
 import ru.myx.ae3.reflect.Reflect;
 
@@ -18,7 +18,7 @@ import ru.myx.ae3.reflect.Reflect;
  * @param <T>
  * 			
  */
-public interface ControlEntry<T extends ControlEntry<?>> extends ControlActor<T>, Handler, Reproducible {
+public interface ControlEntry<T extends ControlEntry<?>> extends ControlActor<T>, RequestHandler, Reproducible {
 	
 	/**
 	 * 

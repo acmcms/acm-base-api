@@ -31,41 +31,41 @@ import ru.myx.ae3.reflect.ControlType;
  * Created on 16.01.2005
  */
 final class TypeCommand extends SimpleCommand {
-	
-	private static final ControlFieldset<?> NULL_FIELDSET = ControlFieldset.createFieldset();
-	
-	private final ControlFieldset<?> arguments;
-	
-	private ProgramPart check;
-	
-	private final String checkExpression;
-	
-	private final FunctionExecutionType execution;
-	
-	private ControlFieldset<?> fieldset;
-	
-	private final BaseObject form;
-	
-	private final String icon;
-	
-	private final boolean instance;
-	
-	private final String key;
-	
-	private final String keyType;
-	
-	private final ControlType<?, ?> result;
-	
-	private ExecCallable script;
-	
-	private final BaseObject scriptSource;
-	
-	private final Server server;
-	
-	private final Type<?> type;
-	
-	TypeCommand(final Server server, final Type<?> type, final String key, final String keyType, final BaseObject attributes) {
 
+	private static final ControlFieldset<?> NULL_FIELDSET = ControlFieldset.createFieldset();
+
+	private final ControlFieldset<?> arguments;
+
+	private ProgramPart check;
+
+	private final String checkExpression;
+
+	private final FunctionExecutionType execution;
+
+	private ControlFieldset<?> fieldset;
+
+	private final BaseObject form;
+
+	private final String icon;
+
+	private final boolean instance;
+
+	private final String key;
+
+	private final String keyType;
+
+	private final ControlType<?, ?> result;
+
+	private ExecCallable script;
+
+	private final BaseObject scriptSource;
+
+	private final Server server;
+
+	private final Type<?> type;
+
+	TypeCommand(final Server server, final Type<?> type, final String key, final String keyType, final BaseObject attributes) {
+		
 		assert server != null : "Server is NULL";
 		attributes.baseDefine("id", key);
 		attributes.baseDefine("typeInstance", type);
@@ -85,13 +85,13 @@ final class TypeCommand extends SimpleCommand {
 		this.result = Control.getTypeByName(Base.getString(attributes, "result", "Object").trim());
 		this.icon = Base.getString(attributes, "icon", null);
 	}
-	
+
 	@Override
 	public BaseObject baseGetSubstitution() {
-		
+
 		return this.getAttributes();
 	}
-	
+
 	/** !!! NO USE
 	 * <p>
 	 * !!! rename to makesSense(object)
@@ -108,27 +108,19 @@ final class TypeCommand extends SimpleCommand {
 	 * @return
 	 * @throws Exception */
 	public final boolean enable(final ExecProcess ctx, final BaseObject object) throws Exception {
-		
+
 		return this.getCheck().callNE0(ctx, object).baseToJavaBoolean();
 	}
-	
+
 	@Override
 	public Class<?> execResultClassJava() {
-		
+
 		return this.result.getJavaClass();
 	}
-	
-	@Override
-	public BaseObject execScope() {
-		
-		/** Only because all of the executors actually do return this value. */
-		/** executes in real current scope */
-		return ExecProcess.GLOBAL;
-	}
-	
+
 	@Override
 	public final ExecCallable function() {
-		
+
 		if (this.script == null) {
 			if (this.scriptSource == BaseObject.UNDEFINED) {
 				return this.script = new ExecEmpty(this.result);
@@ -234,21 +226,21 @@ final class TypeCommand extends SimpleCommand {
 		}
 		return this.script;
 	}
-	
+
 	@Override
 	public final String getIcon() {
-		
+
 		return this.icon;
 	}
-	
+
 	@Override
 	public String toString() {
-		
+
 		return "[object " + this.baseClass() + "(" + "key=" + this.key + ", type=" + this.keyType + ")]";
 	}
-	
+
 	final ProgramPart getCheck() {
-		
+
 		if (this.check == null) {
 			synchronized (this.checkExpression) {
 				if (this.check == null) {
@@ -262,9 +254,9 @@ final class TypeCommand extends SimpleCommand {
 		}
 		return this.check;
 	}
-	
+
 	final ControlFieldset<?> getFieldset() {
-		
+
 		if (this.fieldset == null) {
 			synchronized (this.form) {
 				if (this.fieldset == null) {
@@ -292,27 +284,27 @@ final class TypeCommand extends SimpleCommand {
 			? null
 			: this.fieldset;
 	}
-	
+
 	final BaseObject getForm() {
-		
+
 		return this.form;
 	}
-	
+
 	final boolean needStart() {
-		
+
 		return this.execution == FunctionExecutionType.AUTO;
 	}
-	
+
 	final void start() {
-		
+
 		this.function();
 		if (this.script instanceof FunctionExecutor) {
 			((FunctionExecutor) this.script).start();
 		}
 	}
-	
+
 	final void stop() {
-		
+
 		if (this.script != null) {
 			if (this.script instanceof FunctionExecutor) {
 				((FunctionExecutor) this.script).stop();
