@@ -1,70 +1,79 @@
 /**
  * Created on 27.11.2002
- * 
+ *
  * myx - barachta */
 package ru.myx.ae1.handle;
 
+import java.util.Collection;
+
 import ru.myx.ae1.know.Server;
 
-/**
- * @author barachta
- * 
- * myx - barachta 
- *         "typecomment": Window>Preferences>Java>Templates. To enable and
- *         disable the creation of type comments go to
- *         Window>Preferences>Java>Code Generation.
- */
+/** @author barachta
+ *
+ *         myx - barachta "typecomment": Window>Preferences>Java>Templates. To enable and disable
+ *         the creation of type comments go to Window>Preferences>Java>Code Generation. */
 public final class Handle {
-	static ServerManagerImpl	serverManager	= new ServerManagerDefault();
+
+	static ServerManagerImpl serverManager = new ServerManagerDefault();
 	
-	private static boolean		managerLock		= false;
+	private static boolean managerLock = false;
 	
-	/**
-	 * @param name
-	 * @return server
-	 */
+	/** @param name
+	 * @return server */
 	public static final Server checkServer(final String name) {
+
 		return name == null
-				? null
-				: Handle.serverManager.check( name );
+			? null
+			: Handle.serverManager.check(name);
 	}
 	
-	/**
-	 * @param name
-	 * @return server
-	 */
+	/** @param name
+	 * @return server */
 	public static final Server getServer(final String name) {
+
 		return name == null
-				? null
-				: Handle.serverManager.server( name );
+			? null
+			: Handle.serverManager.server(name);
 	}
 	
-	/**
-	 * @param impl
-	 */
+	/** @return */
+	public static final Collection<String> knownDomainNames() {
+
+		return Handle.serverManager.knownDomainNames();
+	}
+	
+	/** @return */
+	public static final Collection<String> knownServerNames() {
+
+		return Handle.serverManager.knownServerNames();
+	}
+	
+	/** @param impl */
 	public static final void managerImpl(final ServerManagerImpl impl) {
+
 		if (Handle.managerLock) {
-			throw new IllegalStateException( "Locked!" );
+			throw new IllegalStateException("Locked!");
 		}
 		Handle.serverManager = impl;
 	}
 	
 	/**
-	 * 
+	 *
 	 */
 	public static final void managerLock() {
+
 		Handle.managerLock = true;
 	}
 	
-	/**
-	 * @param name
-	 * @param server
-	 */
+	/** @param name
+	 * @param server */
 	public static final void registerServer(final String name, final Server server) {
-		Handle.serverManager.register( name, server );
+
+		Handle.serverManager.register(name, server);
 	}
 	
 	private Handle() {
+
 		// empty
 	}
 }
