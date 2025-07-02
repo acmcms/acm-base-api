@@ -199,6 +199,6 @@ final class ContainerFieldset extends AbstractContainer<ContainerFieldset> {
 		
 		return this.fieldset == null
 			? "fieldset == null"
-			: "innerFields: " + Text.join(this.fieldset.innerFields(), ", ");
+			: "innerFields: " + String.join(", ", this.fieldset.innerFields());
 	}
 }
