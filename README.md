@@ -1,1 +1,3 @@
 # acm-base-api
+
+The core AxiomCMS API — access control (`ae1/access`), the control/fieldset editor framework (`ae1/control`), request dispatching (`ae1/handle`), the server/zone registry (`ae1/know`), messaging (`ae1/messaging`), scheduling (`ae1/schedule`), sessions (`ae1/session`), storage (`ae1/storage`), the SAPI scripting functions consumed by ACM.TPL and its sibling languages (`sapi/`), plus search indexing (`ae2/indexing`) and AE3-era caching (`ae3/cache`). Spans three framework generations in one package (`ae1`, `ae2`, `ae3` sub-packages) — this is the CMS core that survived AE1→AE2→AE3 migrations, not just AE3-native code. Requires `ae3.api`, `ae3.sdk`.
